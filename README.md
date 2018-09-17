@@ -1,5 +1,5 @@
 # DoingDataScience
-Originator: Steve Bramhall, Masters of Data Science student
+Originator: Steve Bramhall, Masters of Data Science student & yes I love data due to the power it can provide
 
 School: Southern Methodist Univerity (SMU)
 
