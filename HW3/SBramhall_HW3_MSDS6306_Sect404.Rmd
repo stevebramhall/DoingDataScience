@@ -103,7 +103,7 @@ df <- college_recent_grads
 ####c. Use a more detailed list of the data sets to write out the URL in a comment to the related news story.
 ```{r}
 #FYI: The line below is commented out so the page doesn't open during testing
-vignette("fivethirtyeight", package = "fivethirtyeight")
+#vignette("fivethirtyeight", package = "fivethirtyeight")
 # The URL for datset college_recent_grads = http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
 ```
 ####d. Using R command(s), give the dimensions and column names of this data frame.
@@ -146,10 +146,13 @@ mtext("Major",2,line=7,col="red") # Using mtext to place y-axis label correctly
 ```
 ###6. Codebook (30 points): 
 ####a) Start a new repository on GitHub for your SMU MSDS homework.  On your local device, make sure there is a directory for Homework at the minimum; you are welcome to add whatever you would like to this repo in addition to your requirements here.
+####COMPLETE
 
 ####b) Create a README.md file which explains the purpose of the repository, the topics included, the sources for the material you post, and contact information in case of questions. Remember, the one in the root directory should be general.  You are welcome to make short READMEs for each assignment individually in other folders.
+####COMPLETE
 
 ####c) In one (or more) of the nested directories, post your RMarkdown script, HTML file, and data from ‘fivethirtyeight.’  Make sure that in your README or elsewhere that you credit fivethirtyeight in some way.
+####COMPLETE
 
 ####d) In your RMarkdown script, please provide the link to this GitHub so the grader can see it.
 #####Link to Github: https://github.com/dataluvr/DoingDataScience/tree/master/HW3
