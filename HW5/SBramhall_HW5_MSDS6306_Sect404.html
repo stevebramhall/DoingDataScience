@@ -11,7 +11,7 @@
 
 <meta name="author" content="Steve Bramhall" />
 
-<meta name="date" content="2018-09-24" />
+<meta name="date" content="2018-09-30" />
 
 <title>Doing DS HW5</title>
 
@@ -124,7 +124,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Doing DS HW5</h1>
 <h4 class="author"><em>Steve Bramhall</em></h4>
-<h4 class="date"><em>September 24, 2018</em></h4>
+<h4 class="date"><em>September 30, 2018</em></h4>
 
 </div>
 
@@ -172,7 +172,6 @@ nameFound</code></pre>
 <div id="d-upon-finding-the-misspelled-name-please-remove-this-particular-observation-as-the-client-says-its-redundant.-save-the-remaining-dataset-as-an-object-y2016" class="section level4">
 <h4>(d) Upon finding the misspelled name, please remove this particular observation, as the client says it’s redundant. Save the remaining dataset as an object: y2016</h4>
 <pre class="r"><code>#Remove misspelled, duplicated name from df and save to y2016
-x &lt;- length(df$Name)
 y2016 &lt;- df[-grep(nameFound,df$Name),]
 summary(y2016) # show 1 less female name in summary</code></pre>
 <pre><code>##       Name       Gender        Count        
@@ -289,8 +288,8 @@ write.table(topgirlnames,&quot;D:\\Steve\\Github\\DoingDataScience\\HW5\\TopGirl
 </div>
 <div id="upload-to-github-10-points-push-at-minimum-your-rmarkdown-for-this-homework-assignment-and-a-codebook-to-one-of-your-github-repositories-you-might-place-this-in-a-homework-repo-like-last-week.-the-codebook-should-contain-a-short-definition-of-each-object-you-create-and-if-creating-multiple-files-which-file-it-is-contained-in.-you-are-welcome-and-encouraged-to-add-other-filesjust-make-sure-you-have-a-description-and-directions-that-are-helpful-for-the-grader." class="section level3">
 <h3>4. Upload to GitHub (10 points): Push at minimum your RMarkdown for this homework assignment and a Codebook to one of your GitHub repositories (you might place this in a Homework repo like last week). The Codebook should contain a short definition of each object you create, and if creating multiple files, which file it is contained in. You are welcome and encouraged to add other files—just make sure you have a description and directions that are helpful for the grader.</h3>
-<div id="github-link-httpsgithub.comdataluvrdoingdatasciencehw5" class="section level4">
-<h4>Github link: <a href="https://github.com/dataluvr/DoingDataScience/HW5" class="uri">https://github.com/dataluvr/DoingDataScience/HW5</a></h4>
+<div id="github-link-httpsgithub.comstevebramhalldoingdatasciencehw5" class="section level4">
+<h4>Github link: <a href="https://github.com/stevebramhall/DoingDataScience/HW5" class="uri">https://github.com/stevebramhall/DoingDataScience/HW5</a></h4>
 </div>
 </div>
 </div>
