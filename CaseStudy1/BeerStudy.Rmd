@@ -5,9 +5,6 @@ date: "October 1, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 ```{r message=FALSE, warning=FALSE}
 # Load Libraries
 library(dplyr)
@@ -26,7 +23,7 @@ names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table c
 ```
 
 ```{r}
-# Obtain number of breweries in each state using group_by function in library dplyr,
+#Q1 Obtain number of breweries in each state using group_by function in library dplyr,
 #  then show data with the summarize function
 breweryStateCnt <- group_by(breweryDF,State)
 summarize(breweryStateCnt,count=n())
@@ -41,7 +38,7 @@ summarize(breweryStateCnt,count=n())
 #chartr("Ã¶"="o",beerDF$BeerStyle)
 
 
-# merge brewery and beer data into brewDataDF data frame
+# Q2 Merge brewery and beer data into brewDataDF data frame
 allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
 #write.table(allBeerDataDF,".\\OutputFiles\\MergedBeerData1.csv",quote=FALSE,sep=',',row.names=FALSE)
 head(allBeerDataDF,6)
@@ -49,21 +46,19 @@ tail(allBeerDataDF,6)
 ```
 
 ```{r}
-# report NA count, put in data frame for easier display options
+# Q3 Report NA count, put in data frame for easier display options
 naCountDF <-as.data.frame(sapply(allBeerDataDF, function(x) sum(length(which(is.na(x))))))
 names(naCountDF) <- ("NA Count") # rename columns
 naCountDF
 ```
 
 ```{r}
+#Q4 Create plot data for the median alcohol content and international bitterness unit for each state,
+#   then plot
+#
 # Add median column for Alcohol Content and Bitterness Units
 allBeerDataDF$medianAlcoholContent <- sapply(allBeerDataDF$AlcoholByVolume,median)
 allBeerDataDF$medianBitternesUnits <- sapply(allBeerDataDF$BitternessUnits,median)
-```
-
-```{r}
-# Create plot data for the median alcohol content and international bitterness unit for each state,
-#   then plot
 medianAlcholBitternessPlotData <- data.frame("State" = allBeerDataDF$State,
                        "MedianAlcoholContent" = allBeerDataDF$medianAlcoholContent,
                        "MedianBitternessUnits" = allBeerDataDF$BitternessUnits,
@@ -71,10 +66,15 @@ medianAlcholBitternessPlotData <- data.frame("State" = allBeerDataDF$State,
 ggplot(medianAlcholBitternessPlotData) +    
     aes(x=MedianAlcoholContent,y=MedianBitternessUnits,fill=medianAlcholBitternessPlotData$State) +   
     geom_bar(stat="identity") 
+
+#The plot needs discussion on the be way to present & deal with NA's
+
 ```
 
 ```{r}
+# Q5 still in progress, not working
 maxDataByState <- group_by(allBeerDataDF,State) %>% summarize(AlcoholByVolume=max(AlcoholByVolume,na.rm=TRUE))
+
 maxDataByState$BitternessUnits<- group_by(allBeerDataDF,State) %>% summarize(BitternessUnits=max(BitternessUnits,na.rm=TRUE))
 
 ```
