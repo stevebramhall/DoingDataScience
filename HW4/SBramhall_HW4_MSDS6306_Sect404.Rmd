@@ -29,11 +29,11 @@ cast_table <- html_nodes(url,".cast_list") %>% html_table() %>% as.data.frame()
 head(cast_table)
 ```
 
-####(c) Clean up the table • It should not have blank observations or rows, a row that should be column names, or just ‘…’ 
+####(c) Clean up the table â¢ It should not have blank observations or rows, a row that should be column names, or just ââ¦â 
 
-+    It should have intuitive column names (ideally 2 to start – Actor and Character) 
-+    In the film, Mr. Warwick plays two characters, which makes his row look a little weird. Please replace his character column with just “Griphook / Professor Filius Flitwick” to make it look better. 
-+    One row might result in “Rest of cast listed alphabetically” – remove this observation. 
++    It should have intuitive column names (ideally 2 to start â Actor and Character) 
++    In the film, Mr. Warwick plays two characters, which makes his row look a little weird. Please replace his character column with just âGriphook / Professor Filius Flitwickâ to make it look better. 
++    One row might result in âRest of cast listed alphabeticallyâ â remove this observation. 
 ```{r}
 # Clean Cast Table
 cast_table <- cast_table[,-1]               # remove empty column
@@ -45,13 +45,13 @@ cast_table[10,2] <- 'Griphook / Professor Filius Flitwick' # fix Mr. Warwick
 head(cast_table,10)
 ```
 	
-####(d) Split the Actor’s name into two columns: FirstName and Surname. Keep in mind that some actors/actresses have middle names as well. Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say “Frank Jeffrey.”) 
+####(d) Split the Actorâs name into two columns: FirstName and Surname. Keep in mind that some actors/actresses have middle names as well. Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say âFrank Jeffrey.â) 
 ```{r}
 # Split Actor into FirstName and Surname
 cast_table <- separate(cast_table,"Actor",into=c("FirstName","Surname"),"(\\s+)(?!.*\\s+)")
 ```
 
-####(e) Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns. 
+####(e) Present the first 10 rows of the data.frame() â It should have only FirstName, Surname, and Character columns. 
 ```{r}
 # Show first 10 rows using knitr::kable for added styling
 kable(head(cast_table,10), align='l', row.names = F) %>% kable_styling(bootstrap_options = "striped", full_width = T)
@@ -69,7 +69,7 @@ url <- read_html('http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs
 stats_table <- html_nodes(url,"table") %>% .[2] %>% html_table() %>% as.data.frame()
 head(stats_table)
 ```
-####(c) Clean up the table (You might get some warnings if you’re working with tibbles) • You’ll want to create an R data.frame() with one observation for each player. Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations. 
+####(c) Clean up the table (You might get some warnings if youâre working with tibbles) â¢ Youâll want to create an R data.frame() with one observation for each player. Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations. 
 ```{r}
 # Clean Stats Table
 spurs_table <- stats_table[-1,]                     # remove 1st row, put into spurs_table
@@ -78,7 +78,7 @@ spurs_table <- spurs_table[-1,]                     # remove the non-data row
 spurs_table <- spurs_table[-(length(spurs_table)),] # remove totals row
 head(spurs_table)
 ```
-+   The column PLAYER has two variables of interest in it: the player’s name and their position, denoted by 1-2 letters after their name. Split the cells into two columns, one with Name and the other Position. 
++   The column PLAYER has two variables of interest in it: the playerâs name and their position, denoted by 1-2 letters after their name. Split the cells into two columns, one with Name and the other Position. 
 ```{r, warning=F}
 # Split Player into Player and Position
 spurs_table <- separate(spurs_table,"PLAYER",into=c("PLAYER","Position"),",")
@@ -102,7 +102,7 @@ str(spurs_table)
 +   Informative Title, centered 
 +   Relevant x and y axis labels (not simply variables names!) 
 +   Human-readable axes with no overlap (you might have to flip x and y to fix that). Note: You do not have to convert the decimal to a percentage. 
-+   Color the columns by the team member’s position (so, all PF’s should have the same color, etc.) 
++   Color the columns by the team memberâs position (so, all PFâs should have the same color, etc.) 
 ```{r fig.align="center"}
 plotdata <- data.frame("Player" = spurs_table$PLAYER,
                        "FG" = spurs_table$`FG%`,

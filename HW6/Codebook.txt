@@ -1,0 +1,35 @@
+This folder contains the files for homework6.
+
+The program (Rmd file) reads files N-MHSS-2015-DS0001-data-r.rda & statesize.csv 
+The program filters the data, merges the data, and outputs plots for VA Sites by State and VA Sites per 1000 sq miles by State.
+
+Credits: StackOverFlow, Helpful Packages: stringr, knitr, diplyr, ggplot2
+
+Input Files
+-----------
+N-MHSS-2015-DS0001-data-r.rda: survey information of known healthcare facilities that offer mental health servcie
+statesize.csv: contains geographical information such as state, square miles, and region
+
+Output Files
+------------
+SBramhall_HW5_MSDS6306_Sect404.Rmd: R markdown file with code
+SBramhall_HW5_MSDS6306_Sect404.html: R markdown output showing all code and code outputs
+TopGirlNames.csv: Output file with top 10 girl names
+
+Libraries
+---------
+dplyr
+stringr
+knitr
+ggplot2
+
+Variables
+---------
+mergedDF - data frame, includes VA facility information about the 48 contiguous states and the square miles for the state
+mh2015_puf - data frame, data set from survey of known healthcare facilities that offer mental health servcie 
+             from https://datafiles.samhsa.gov/study-dataset/national-mental-health-services-survey-2015-n-mhss-2015-ds0001-nid17098
+states - vector, of states abbreviations
+stateSizeDF - data frame, data set containing geographical information such as state, square miles, and region
+vaDF - data frame, mh2015_puf data but filtered to only include the 48 contiguous states with VA facilities
+vaCntDF - dataframe, contains the state and number of VA facilities in that state for each 48 contiguous states
+			
