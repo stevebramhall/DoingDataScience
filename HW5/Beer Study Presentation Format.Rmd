@@ -1,0 +1,72 @@
+---
+title: "Beer Study"
+author: "Steve Bramhall, Lei Jiang"
+date: "October 16, 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Agenda
+
+- Review Breweries by State
+- Beer & Brewery Data Merge 
+- Missing Data
+- Alcohol By Volmue (ABV) by State
+- International Bitterness Unit (IBU) by State
+- State with Max ABV and IBU
+- ABV Summary
+- ABV vs IBU
+- Conclusion
+
+```{r message=FALSE, warning=FALSE, echo = FALSE}
+
+#--- Load libraries and data files---
+
+# Load Libraries
+library(dplyr)      # for string functions
+library(ggplot2)    # for plots
+library(kableExtra) # for table formatting
+library(knitr)      # for presenting in html
+```
+
+```{r echo = FALSE}
+
+# Read beer data from csv file and put into beerDF data frame.Then rename columns to be more readable.
+beerDF <- read.csv("D:\\Steve\\Github\\DoingDataScience\\MSDS6306CaseStudy1\\ImportFiles\\Beers.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+names(beerDF) <- c("BeerName","BeerID","AlcoholByVolume","BitternessUnits","BreweryID",
+                   "BeerStyle","Ounces") # rename table columns
+
+# Read brewery data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
+breweryDF <- read.csv("D:\\Steve\\Github\\DoingDataScience\\MSDS6306CaseStudy1\\ImportFiles\\Breweries.csv",header=TRUE,sep=",",stringsAsFactors = FALSE)
+names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
+```
+
+## Breweries by State
+
+```{r message=FALSE, warning=FALSE, echo = FALSE}
+
+#Q1 Obtain number of breweries in each state using group_by function in library dplyr,
+#  then show data with the summarize function
+breweryStateCnt <- group_by(breweryDF,State)                   # get brewery count by state
+brewerySummaryDF <- summarize(breweryStateCnt,count=n())       # put data into a dataframe for easier manipulation
+
+#create a histogram for Breweries by State
+ggplot(data=brewerySummaryDF, aes(x=reorder(State,-count), y=count)) + 
+  geom_histogram(stat="identity", col="black", aes(fill=count)) + coord_flip()+             # make horizontal plot
+  theme(axis.text.y=element_text(size=6)) +                                                 # decrease axis font
+  labs(x="State",y="Breweries") +                                                           # add axes titles
+  theme(plot.title = element_text(color="dark blue",hjust=0.5)) +                           # format main title
+  geom_text(size=2, aes(label=count), position=position_dodge(width=1), hjust=-1.0) +       # format plot text data
+  scale_fill_gradient2("Number per State", low = "sky blue", mid="light blue", high = "blue", midpoint=20) # set color scheme
+```
+
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+

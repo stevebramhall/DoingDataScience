@@ -1,0 +1,97 @@
+---
+title: "Unit 9 Assignment"
+author: "Steve Bramhall"
+date: "October 26, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # each code chunk will have their own echo control
+```
+
+```{r message=FALSE, warning=FALSE}
+# Load Libraries
+library(dplyr)      # for string functions
+library(ggplot2)    # for plots
+library(kableExtra) # for table formatting
+library(knitr)      # for presenting in html
+library(stringr)    # for str_trim function
+
+```
+
+###A. Clean and prepare the data
+
+####First read the two data sets into data frames beerDF and breweryDF from csv files. The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.
+```{r echo = TRUE}
+# Read beer data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
+beerDF <- read.csv(".\\InputFiles\\Beers.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+names(beerDF) <- c("BeerName","BeerID","AlcoholByVolume","BitternessUnits","BreweryID",
+                   "BeerStyle","Ounces") # rename table columns
+
+# Read brewery data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
+breweryDF <- read.csv(".\\InputFiles\\Breweries.csv",header=TRUE,sep=",",stringsAsFactors = FALSE)
+names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
+```
+
+####Merge the beer and brewery data sets then remove surrounding white space from State column.
+```{r echo = TRUE}
+#Merge brewery and beer data into the brewDataDF data frame
+allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
+allBeerDataDF$State <- sapply(allBeerDataDF$State, str_trim)    # remove surrounding whitespace to state col
+```
+
+####Create a separate data with only CO & TX beer and remove IBU's with NA's. Then order by IBU.
+```{r echo = TRUE}
+beerCOTX=subset(allBeerDataDF,(allBeerDataDF$State=="CO" | allBeerDataDF$State=="TX") & !is.na(BitternessUnits))
+beerCOTX <- beerCOTX[with(beerCOTX,order(BitternessUnits)),] # sort by IBU, ascending
+```
+
+###B. Create initial plots of the data
+####Plot Colorado Beers' ABV vs IBU
+```{r echo = TRUE}
+scatterplot <- ggplot(data=filter(beerCOTX,State=="CO"), aes(AlcoholByVolume,BitternessUnits,col=AlcoholByVolume)) +
+  geom_point() + coord_flip() +                                                             # make horizontal scatter plot
+  ggtitle("Fig 1 - Colorado ABV and IBU") +                                                 # add title
+  theme(plot.title = element_text(color="dark blue",hjust=0.5)) +                           # format main title
+  xlab("Alcohol Content") +  ylab("Bitterness") +                                           # add axis labels
+  theme(axis.title.x = element_text(color="dark blue")) +                                   # format x title
+  theme(axis.title.y = element_text(color="dark blue"))                                     # format y title
+
+#linear fit by lm to scatterplot
+scatterplot+geom_smooth(method = "lm", colour = "black", fill="yellow")
+```
+
+####Plot Texas Beers' ABV vs IBU
+```{r echo = TRUE}
+scatterplot <- ggplot(data=filter(beerCOTX,State=="TX"), aes(AlcoholByVolume,BitternessUnits,col=AlcoholByVolume)) +
+  geom_point() + coord_flip() +                                                             # make horizontal scatter plot
+  ggtitle("Fig 2 - Texas ABV and IBU") +                                                    # add title
+  theme(plot.title = element_text(color="dark blue",hjust=0.5)) +                           # format main title
+  xlab("Alcohol Content") +  ylab("Bitterness") +                                           # add axis labels
+  theme(axis.title.x = element_text(color="dark blue")) +                                   # format x title
+  theme(axis.title.y = element_text(color="dark blue"))                                     # format y title
+
+#linear fit by lm to scatterplot
+scatterplot+geom_smooth(method = "lm", colour = "black", fill="yellow")
+```
+
+###C. Model the data
+####Plot data & linear model
+```{r}
+beerCO=subset(beerCOTX,beerCOTX$State=="CO")
+beerTX=subset(beerCOTX,beerCOTX$State=="TX")
+
+fitCO <- lm(AlcoholByVolume~BitternessUnits,data=beerCO)
+plot(beerCO$AlcoholByVolume~beerCO$BitternessUnits)
+abline(fitCO)
+
+fitTX <- lm(AlcoholByVolume~BitternessUnits,data=beerTX)
+plot(beerTX$AlcoholByVolume~beerTX$BitternessUnits)
+abline(fitTX)
+
+#hist(beerCO$AlcoholByVolume)
+#hist(beerTX$AlcoholByVolume)
+```
+#### For the CO Beer
+1. We will assume the data are independent.
+2. The data is fairly normal but 
