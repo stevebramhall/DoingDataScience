@@ -21,7 +21,7 @@ library(stringr)    # for str_trim function
 
 ###A. Clean and prepare the data
 
-####First read the two data sets into data frames beerDF and breweryDF from csv files. The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.
+####1. First read the two data sets into data frames beerDF and breweryDF from csv files. The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.Create column for Brewery ID that is common to both datasets.
 ```{r echo = TRUE}
 # Read beer data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
 beerDF <- read.csv(".\\InputFiles\\Beers.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
@@ -33,21 +33,29 @@ breweryDF <- read.csv(".\\InputFiles\\Breweries.csv",header=TRUE,sep=",",strings
 names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
 ```
 
-####Merge the beer and brewery data sets then remove surrounding white space from State column.
+####2. Merge the beer and brewery data sets then remove surrounding white space from State column.
 ```{r echo = TRUE}
 #Merge brewery and beer data into the brewDataDF data frame
 allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
+```
+
+####3. Remove surrounding whitespace for State info
+```{r echo = TRUE}
 allBeerDataDF$State <- sapply(allBeerDataDF$State, str_trim)    # remove surrounding whitespace to state col
 ```
 
-####Create a separate data with only CO & TX beer and remove IBU's with NA's. Then order by IBU.
+####4. Create a separate data with only CO & TX beer and remove IBU's with NA's. Then order by IBU.
 ```{r echo = TRUE}
 beerCOTX=subset(allBeerDataDF,(allBeerDataDF$State=="CO" | allBeerDataDF$State=="TX") & !is.na(BitternessUnits))
+```
+
+####5. Order beerCOTX by IBU (ascending)
+```{r echo = TRUE}
 beerCOTX <- beerCOTX[with(beerCOTX,order(BitternessUnits)),] # sort by IBU, ascending
 ```
 
 ###B. Create initial plots of the data
-####Plot Colorado Beers' ABV vs IBU
+####6. Plot Colorado Beers' ABV vs IBU
 ```{r echo = TRUE}
 scatterplot <- ggplot(data=filter(beerCOTX,State=="CO"), aes(AlcoholByVolume,BitternessUnits,col=AlcoholByVolume)) +
   geom_point() + coord_flip() +                                                             # make horizontal scatter plot
@@ -61,7 +69,7 @@ scatterplot <- ggplot(data=filter(beerCOTX,State=="CO"), aes(AlcoholByVolume,Bit
 scatterplot+geom_smooth(method = "lm", colour = "black", fill="yellow")
 ```
 
-####Plot Texas Beers' ABV vs IBU
+####6. Plot Texas Beers' ABV vs IBU
 ```{r echo = TRUE}
 scatterplot <- ggplot(data=filter(beerCOTX,State=="TX"), aes(AlcoholByVolume,BitternessUnits,col=AlcoholByVolume)) +
   geom_point() + coord_flip() +                                                             # make horizontal scatter plot
@@ -76,22 +84,98 @@ scatterplot+geom_smooth(method = "lm", colour = "black", fill="yellow")
 ```
 
 ###C. Model the data
-####Plot data & linear model
-```{r}
+####7. Plot data, add linear model, check assumptions
+```{r echo = TRUE}
+# creating subset for CO, easier to work with
 beerCO=subset(beerCOTX,beerCOTX$State=="CO")
-beerTX=subset(beerCOTX,beerCOTX$State=="TX")
 
-fitCO <- lm(AlcoholByVolume~BitternessUnits,data=beerCO)
-plot(beerCO$AlcoholByVolume~beerCO$BitternessUnits)
-abline(fitCO)
+fitCO <- lm(AlcoholByVolume~BitternessUnits,data=beerCO) # linear model
+plot(beerCO$AlcoholByVolume~beerCO$BitternessUnits,      # scatter plot for CO
+     main="Colorado ABV vs IBU",                         # add plot title
+     xlab="IBU",                                         # add x-axis label
+     ylab="ABV")                                         # add y-axis label
+abline(fitCO,col='dark green')                           # add linear fit line
 
-fitTX <- lm(AlcoholByVolume~BitternessUnits,data=beerTX)
-plot(beerTX$AlcoholByVolume~beerTX$BitternessUnits)
-abline(fitTX)
+residsCO=resid(fitCO)                                    # residuals for CO
+plot(beerCO$BitternessUnits,residsCO,                    # plot CO residuals
+     main="Colorado Residual Plot-ABV vs IBU",           # add plot title
+     xlab="IBU",                                         # add x-axis label
+     ylab="ABV Residuals")                               # add y-axis label
+qqnorm(residsCO,main="Colorado Normal Q-Q Plot",         # QQ Plot for CO residuals
+       xlab="Normal Score",                              # add y-axis label
+       ylab="Residuals")                                 # add x-axis label
 
-#hist(beerCO$AlcoholByVolume)
-#hist(beerTX$AlcoholByVolume)
+# creating subset for TX, easier to work with
+beerTX=subset(beerCOTX,beerCOTX$State=="TX") 
+
+fitTX <- lm(AlcoholByVolume~BitternessUnits,data=beerTX) # linear model
+plot(beerTX$AlcoholByVolume~beerTX$BitternessUnits,      # scatter plot for TX
+     main="Texas ABV vs IBU",                            # add plot title
+     xlab="IBU",                                         # add x-axis label
+     ylab="ABV")                                         # add y-axis label
+abline(fitCO,col='red')                                  # add linear fit line
+
+residsTX=resid(fitTX)                                    # residuals for TX
+plot(beerTX$BitternessUnits,residsTX,                    # plot TX residuals
+     main="Texas Residual Plot-ABV vs IBU",              # add plot title
+     xlab="IBU",                                         # add x-axis label
+     ylab="ABV Residuals")                               # add y-axis label
+
+qqnorm(residsTX,main="Texas Normal Q-Q Plot",            # QQ Plot for CO residuals
+       xlab="Normal Score",                              # add y-axis label
+       ylab="Residuals")                                 # add x-axis label
 ```
-#### For the CO Beer
+
+####8. Assumptions for the CO Beer
 1. We will assume the data are independent.
-2. The data is fairly normal but 
+2. No patterns seen in the residuals plot so relationship of the data is linear.
+3. The variance appears constant in the residuals plot.
+4. The normal QQ plot show residuals are relatively normal.
+
+#### Assumptions for the TX Beer
+1. We will assume the data are independent.
+2. No patterns seen in the residuals plot so relationship of the data is linear.
+3. The variance appears constant in the residuals plot.
+4. The normal QQ plot show residuals are relatively normal.
+
+###D. Gain inference from the model
+####9. Print parameter estimate table. Interpret slope. Is there evidence the relationship between TX & CO ABV vs IBU is significantly different?
+#### COLORADO 
+```{r echo = TRUE}
+summary(fitCO)
+```
+
+####For every 1% increase in ABV, the estimated IBU increases 3.676e-04.
+
+#### TEXAS
+```{r echo = TRUE}
+summary(fitTX)
+```
+
+####For every 1% increase in ABV, the estimated IBU increases 4.172e-04.
+#### There doesn't appear to be any evidence supporting a significant difference with ABV vs IBU between Colorado and Texas.
+
+####10. Confidence Intervals
+#### COLORADO
+```{r echo = TRUE}
+confint(fitCO,level=.95)
+```
+####We are 95% confident for every 1% increase in ABV, the IBU increase has a plausible range of 2.997e-04 to 4.354e-04. 
+#### TEXAS
+```{r echo = TRUE}
+confint(fitTX,level=.95)
+```
+
+####We are 95% confident for every 1% increase in ABV, the IBU increase has a plausible range of 3.44e-04 to 4.904e-04. 
+####Since there is an overlap with the Colorado and Texas confidence intervals, there is not enought evidence supporting a significant diference with ABV vs IBU betweeen Colorado and Texas.
+###E. Compare two competing models: External Cross Validation
+####11. Add IBU squared colume to data
+```{r echo = TRUE}
+beerCOTX <- within(beerCOTX, IBU2 <- beerCOTX$BitternessUnits*beerCOTX$BitternessUnits)
+```
+
+####12. For each state, create a training and test set from the data (60%/40% split respectively). Print a summary of each new data frame. There should be four: TrainingCO, TestCO, TrainingTX, TestTX.
+```{r echo = TRUE}
+
+```
+
