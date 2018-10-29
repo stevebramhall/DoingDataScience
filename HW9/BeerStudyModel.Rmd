@@ -33,7 +33,7 @@ breweryDF <- read.csv(".\\InputFiles\\Breweries.csv",header=TRUE,sep=",",strings
 names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
 ```
 
-####2. Merge the beer and brewery data sets then remove surrounding white space from State column.
+####2. Merge the beer and brewery data sets into a sigle dataframe.
 ```{r echo = TRUE}
 #Merge brewery and beer data into the brewDataDF data frame
 allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
@@ -44,7 +44,7 @@ allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
 allBeerDataDF$State <- sapply(allBeerDataDF$State, str_trim)    # remove surrounding whitespace to state col
 ```
 
-####4. Create a separate data with only CO & TX beer and remove IBU's with NA's. Then order by IBU.
+####4. Create a separate data set with only CO & TX beer and remove IBU's with NA's.
 ```{r echo = TRUE}
 beerCOTX=subset(allBeerDataDF,(allBeerDataDF$State=="CO" | allBeerDataDF$State=="TX") & !is.na(BitternessUnits))
 ```
@@ -91,17 +91,17 @@ beerCO=subset(beerCOTX,beerCOTX$State=="CO")
 
 fitCO <- lm(AlcoholByVolume~BitternessUnits,data=beerCO) # linear model
 plot(beerCO$AlcoholByVolume~beerCO$BitternessUnits,      # scatter plot for CO
-     main="Colorado ABV vs IBU",                         # add plot title
+     main="Fig 3 - Colorado ABV vs IBU",                 # add plot title
      xlab="IBU",                                         # add x-axis label
      ylab="ABV")                                         # add y-axis label
 abline(fitCO,col='dark green')                           # add linear fit line
 
 residsCO=resid(fitCO)                                    # residuals for CO
 plot(beerCO$BitternessUnits,residsCO,                    # plot CO residuals
-     main="Colorado Residual Plot-ABV vs IBU",           # add plot title
+     main="Fig 4 - Colorado Residual Plot-ABV vs IBU",   # add plot title
      xlab="IBU",                                         # add x-axis label
      ylab="ABV Residuals")                               # add y-axis label
-qqnorm(residsCO,main="Colorado Normal Q-Q Plot",         # QQ Plot for CO residuals
+qqnorm(residsCO,main="Fig 5 - Colorado Normal Q-Q Plot", # QQ Plot for CO residuals
        xlab="Normal Score",                              # add y-axis label
        ylab="Residuals")                                 # add x-axis label
 
@@ -110,18 +110,18 @@ beerTX=subset(beerCOTX,beerCOTX$State=="TX")
 
 fitTX <- lm(AlcoholByVolume~BitternessUnits,data=beerTX) # linear model
 plot(beerTX$AlcoholByVolume~beerTX$BitternessUnits,      # scatter plot for TX
-     main="Texas ABV vs IBU",                            # add plot title
+     main="Fig 6 - Texas ABV vs IBU",                    # add plot title
      xlab="IBU",                                         # add x-axis label
      ylab="ABV")                                         # add y-axis label
 abline(fitCO,col='red')                                  # add linear fit line
 
 residsTX=resid(fitTX)                                    # residuals for TX
 plot(beerTX$BitternessUnits,residsTX,                    # plot TX residuals
-     main="Texas Residual Plot-ABV vs IBU",              # add plot title
+     main="Fig 7 - Texas Residual Plot-ABV vs IBU",      # add plot title
      xlab="IBU",                                         # add x-axis label
      ylab="ABV Residuals")                               # add y-axis label
 
-qqnorm(residsTX,main="Texas Normal Q-Q Plot",            # QQ Plot for CO residuals
+qqnorm(residsTX,main="Fig 8 - Texas Normal Q-Q Plot",    # QQ Plot for CO residuals
        xlab="Normal Score",                              # add y-axis label
        ylab="Residuals")                                 # add x-axis label
 ```
@@ -145,14 +145,14 @@ qqnorm(residsTX,main="Texas Normal Q-Q Plot",            # QQ Plot for CO residu
 summary(fitCO)
 ```
 
-####For every 1 IBU increase, the estimated ABV increases 3.676e-04.
+####For every 1 IBU increase, the estimated ABV increases 3.676e-04 (~0.037%).
 
 #### TEXAS
 ```{r echo = TRUE}
 summary(fitTX)
 ```
 
-####For every 1 IBU increase, the estimated ABV increases 4.172e-04.
+####For every 1 IBU increase, the estimated ABV increases 4.172e-04 (~0.042%).
 #### There doesn't appear to be any evidence supporting a significant difference with ABV vs IBU between Colorado and Texas.
 
 ####10. Confidence Intervals
@@ -160,18 +160,19 @@ summary(fitTX)
 ```{r echo = TRUE}
 confint(fitCO,level=.95)
 ```
-####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 2.997e-04 to 4.354e-04. 
+####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 2.997e-04 to 4.354e-04 (~0.03% to 0.0435%). 
 #### TEXAS
 ```{r echo = TRUE}
 confint(fitTX,level=.95)
 ```
 
-####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 3.44e-04 to 4.904e-04. 
+####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 3.44e-04 to 4.904e-04 (~0.034% to 0.049%). 
 ####Since there is an overlap with the Colorado and Texas confidence intervals, there is not enought evidence supporting a significant diference with ABV vs IBU betweeen Colorado and Texas.
 ###E. Compare two competing models: External Cross Validation
 ####11. Add IBU squared colume to data
 ```{r echo = TRUE}
 beerCOTX <- within(beerCOTX, IBU2 <- beerCOTX$BitternessUnits*beerCOTX$BitternessUnits)
+head(beerCOTX)
 ```
 
 ####12. For each state, create a training and test set from the data (60%/40% split respectively). Print a summary of each new data frame. There should be four: TrainingCO, TestCO, TrainingTX, TestTX.
@@ -215,70 +216,73 @@ summary(testTX)
 
 ####13. Compare Linear and Quadratic Models
 ####Models fit for CO
-```{r}
+```{r echo = TRUE}
 #Fit the linear model for cO
-fitTrainCO1 = lm(AlcoholByVolume~BitternessUnits, data = trainCO)
+fitTrainCO1 = lm(AlcoholByVolume~BitternessUnits, data = trainCO) # get the beta hats
 predsTrainCO1 = predict(fitTrainCO1)                  # Model predictions on training data which was used to fit the model
 predsTestCO1 = predict(fitTrainCO1, newdata = testCO) # Model predictions using test data
 
 #Fit the quadratic model for cO
-fitTrainCO2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainCO)
+fitTrainCO2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainCO) # get the beta hats
 predsTrainCO2 = predict(fitTrainCO2)                  # Model predictions on training data which was used to fit the model
 predsTestCO2 = predict(fitTrainCO2, newdata = testCO) # Model predictions using test data
 ```
 
 ####Calculate the CO MSEs
-```{r}
+```{r echo = TRUE}
 MSEholderTrainCO1 = sum((predsTrainCO1 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, linear
 MSEholderTestCO1 = sum((predsTestCO1 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, linear
-MSEholderTestCO1
-MSEholderTrainCO1
 
 MSEholderTrainCO2 = sum((predsTrainCO2 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, quadratic
 MSEholderTestCO2 = sum((predsTestCO2 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, quadratic
-MSEholderTestCO2
-MSEholderTrainCO2
 
 MSE_CO1=abs(MSEholderTrainCO1-MSEholderTestCO1)
 MSE_CO2=abs(MSEholderTrainCO2-MSEholderTestCO2)
-
-if (MSE_CO1 < MSE_CO2) { 
-  print("The linear model is better than the quadratic model for Colorado AVB vs IBU")
-}else { print("The quadratic model is better than the linear model for Colorado AVB vs IBU") }
-
 ```
-####Models fit for TX
+####CO Model Comparison Results
 ```{r}
+paste0("Colorado MSE for the Linear Model Training Data = ",MSEholderTrainCO1)
+paste0("Colorado MSE for the Linear Model Test Data = ",MSEholderTestCO1)
+paste0("Colorado MSE for the Quadratic Model Training Data = ",MSEholderTrainCO2)
+paste0("Colorado MSE for the Quadratic Model Test Data = ",MSEholderTestCO2)
+paste0("Colorado MSE Delta for the Linear Model = ", MSE_CO1)
+paste0("Colorado MSE Delta for the Quadratic Model = ", MSE_CO2)
+```
+####Since the MSE Delta for the linear model is less than the MSE Delta for the quadratic model, the linear model is better than the quadratic model for Colorado AVB vs IBU. The Delta is the absolute value of the difference between the MSE training and test data.
+
+####Models fit for TX
+```{r echo = TRUE}
 #Fit the linear model for TX
-fitTrainTX1 = lm(AlcoholByVolume~BitternessUnits, data = trainTX)
+fitTrainTX1 = lm(AlcoholByVolume~BitternessUnits, data = trainTX) # get the beta hats
 predsTrainTX1 = predict(fitTrainTX1)                  # Model predictions on training data which was used to fit the model
 predsTestTX1 = predict(fitTrainTX1, newdata = testTX) # Model predictions using test data
 
 #Fit the quadratic model for cO
-fitTrainTX2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainTX)
+fitTrainTX2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainTX) # get the beta hats
 predsTrainTX2 = predict(fitTrainTX2)                  # Model predictions on training data which was used to fit the model
 predsTestTX2 = predict(fitTrainTX2, newdata = testTX) # Model predictions using test data
 ```
 
 ####Calculate the TX MSEs
-```{r}
+```{r echo = TRUE}
 MSEholderTrainTX1 = sum((predsTrainTX1 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, linear
 MSEholderTestTX1 = sum((predsTestTX1 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, linear
-MSEholderTestTX1
-MSEholderTrainTX1
 
 MSEholderTrainTX2 = sum((predsTrainTX2 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, quadratic
 MSEholderTestTX2 = sum((predsTestTX2 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, quadratic
-MSEholderTestTX2
-MSEholderTrainTX2
 
 MSE_TX1=abs(MSEholderTrainTX1-MSEholderTestTX1)
 MSE_TX2=abs(MSEholderTrainTX2-MSEholderTestTX2)
-
-if (MSE_TX1 < MSE_TX2) { 
-  print("The linear model is better than the quadratic model for Texas AVB vs IBU")
-}else { print("The quadratic model is better than the linear model for Texas AVB vs IBU") }
 ```
 
-
+####TX Model Comparison Results
+```{r}
+paste0("MSE for the Linear Model Training Data = ",MSEholderTrainTX1)
+paste0("MSE for the Linear Model Test Data = ",MSEholderTestTX1)
+paste0("MSE for the Quadratic Model Training Data = ",MSEholderTrainTX2)
+paste0("MSE for the Quadratic Model Test Data = ",MSEholderTestTX2)
+paste0("MSE Delta for the Linear Model = ", MSE_TX1)
+paste0("MSE Delta for the Quadratic Model = ", MSE_TX2)
+```
+####Since the MSE Delta for the linear model is less than the MSE Delta for the quadratic model, the linear model is better than the quadratic model for Texas AVB vs IBU. The Delta is the absolute value of the difference between the MSE training and test data.
 
