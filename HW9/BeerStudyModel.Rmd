@@ -286,3 +286,4 @@ paste0("MSE Delta for the Quadratic Model = ", MSE_TX2)
 ```
 ####Since the MSE Delta for the linear model is less than the MSE Delta for the quadratic model, the linear model is better than the quadratic model for Texas AVB vs IBU. The Delta is the absolute value of the difference between the MSE training and test data.
 
+####Github Location: https://github.com/stevebramhall/DoingDataScience/tree/master/HW9
