@@ -145,14 +145,14 @@ qqnorm(residsTX,main="Texas Normal Q-Q Plot",            # QQ Plot for CO residu
 summary(fitCO)
 ```
 
-####For every 1% increase in ABV, the estimated IBU increases 3.676e-04.
+####For every 1 IBU increase, the estimated ABV increases 3.676e-04.
 
 #### TEXAS
 ```{r echo = TRUE}
 summary(fitTX)
 ```
 
-####For every 1% increase in ABV, the estimated IBU increases 4.172e-04.
+####For every 1 IBU increase, the estimated ABV increases 4.172e-04.
 #### There doesn't appear to be any evidence supporting a significant difference with ABV vs IBU between Colorado and Texas.
 
 ####10. Confidence Intervals
@@ -160,13 +160,13 @@ summary(fitTX)
 ```{r echo = TRUE}
 confint(fitCO,level=.95)
 ```
-####We are 95% confident for every 1% increase in ABV, the IBU increase has a plausible range of 2.997e-04 to 4.354e-04. 
+####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 2.997e-04 to 4.354e-04. 
 #### TEXAS
 ```{r echo = TRUE}
 confint(fitTX,level=.95)
 ```
 
-####We are 95% confident for every 1% increase in ABV, the IBU increase has a plausible range of 3.44e-04 to 4.904e-04. 
+####We are 95% confident for every 1 IBU increase, the ABV increase has a plausible range of 3.44e-04 to 4.904e-04. 
 ####Since there is an overlap with the Colorado and Texas confidence intervals, there is not enought evidence supporting a significant diference with ABV vs IBU betweeen Colorado and Texas.
 ###E. Compare two competing models: External Cross Validation
 ####11. Add IBU squared colume to data
@@ -176,6 +176,109 @@ beerCOTX <- within(beerCOTX, IBU2 <- beerCOTX$BitternessUnits*beerCOTX$Bitternes
 
 ####12. For each state, create a training and test set from the data (60%/40% split respectively). Print a summary of each new data frame. There should be four: TrainingCO, TestCO, TrainingTX, TestTX.
 ```{r echo = TRUE}
+#Divide CO into training and test set into 60% training & 40% test
+samplesizeCO=nrow(filter(beerCOTX,State=="CO"))
+train_percent = .6
+train_indicesCO = sample(seq(1,samplesizeCO,length = samplesizeCO),train_percent*samplesizeCO)
+trainCO = subset(beerCOTX,beerCOTX$State=="CO")[train_indicesCO,] # CO random training data from original data
+testCO = subset(beerCOTX,beerCOTX$State=="CO")[-train_indicesCO,] # CO random test data from original data
+```
+
+####Summary for Colorado Training Set
+```{r echo = TRUE}
+summary(trainCO)
+```
+
+####Summary for Colorado Test Set
+```{r echo = TRUE}
+summary(testCO)
+```
+
+```{r echo = TRUE}
+#Divide TX into training and test set into 60% training & 40% test
+samplesizeTX=nrow(filter(beerCOTX,State=="TX"))
+train_percent = .6
+train_indicesTX = sample(seq(1,samplesizeTX,length = samplesizeTX),train_percent*samplesizeTX)
+trainTX = subset(beerCOTX,beerCOTX$State=="TX")[train_indicesTX,] # TX random training data from original data
+testTX = subset(beerCOTX,beerCOTX$State=="TX")[-train_indicesTX,] # TX random test data from original data
+```
+
+####Summary for Texas Training Set
+```{r echo = TRUE}
+summary(trainTX)
+```
+
+####Summary for Texas Test Set
+```{r echo = TRUE}
+summary(testTX)
+```
+
+####13. Compare Linear and Quadratic Models
+####Models fit for CO
+```{r}
+#Fit the linear model for cO
+fitTrainCO1 = lm(AlcoholByVolume~BitternessUnits, data = trainCO)
+predsTrainCO1 = predict(fitTrainCO1)                  # Model predictions on training data which was used to fit the model
+predsTestCO1 = predict(fitTrainCO1, newdata = testCO) # Model predictions using test data
+
+#Fit the quadratic model for cO
+fitTrainCO2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainCO)
+predsTrainCO2 = predict(fitTrainCO2)                  # Model predictions on training data which was used to fit the model
+predsTestCO2 = predict(fitTrainCO2, newdata = testCO) # Model predictions using test data
+```
+
+####Calculate the CO MSEs
+```{r}
+MSEholderTrainCO1 = sum((predsTrainCO1 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, linear
+MSEholderTestCO1 = sum((predsTestCO1 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, linear
+MSEholderTestCO1
+MSEholderTrainCO1
+
+MSEholderTrainCO2 = sum((predsTrainCO2 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, quadratic
+MSEholderTestCO2 = sum((predsTestCO2 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, quadratic
+MSEholderTestCO2
+MSEholderTrainCO2
+
+MSE_CO1=abs(MSEholderTrainCO1-MSEholderTestCO1)
+MSE_CO2=abs(MSEholderTrainCO2-MSEholderTestCO2)
+
+if (MSE_CO1 < MSE_CO2) { 
+  print("The linear model is better than the quadratic model for Colorado AVB vs IBU")
+}else { print("The quadratic model is better than the linear model for Colorado AVB vs IBU") }
 
 ```
+####Models fit for TX
+```{r}
+#Fit the linear model for TX
+fitTrainTX1 = lm(AlcoholByVolume~BitternessUnits, data = trainTX)
+predsTrainTX1 = predict(fitTrainTX1)                  # Model predictions on training data which was used to fit the model
+predsTestTX1 = predict(fitTrainTX1, newdata = testTX) # Model predictions using test data
+
+#Fit the quadratic model for cO
+fitTrainTX2 = lm(AlcoholByVolume~BitternessUnits + IBU2, data = trainTX)
+predsTrainTX2 = predict(fitTrainTX2)                  # Model predictions on training data which was used to fit the model
+predsTestTX2 = predict(fitTrainTX2, newdata = testTX) # Model predictions using test data
+```
+
+####Calculate the TX MSEs
+```{r}
+MSEholderTrainTX1 = sum((predsTrainTX1 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, linear
+MSEholderTestTX1 = sum((predsTestTX1 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, linear
+MSEholderTestTX1
+MSEholderTrainTX1
+
+MSEholderTrainTX2 = sum((predsTrainTX2 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, quadratic
+MSEholderTestTX2 = sum((predsTestTX2 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, quadratic
+MSEholderTestTX2
+MSEholderTrainTX2
+
+MSE_TX1=abs(MSEholderTrainTX1-MSEholderTestTX1)
+MSE_TX2=abs(MSEholderTrainTX2-MSEholderTestTX2)
+
+if (MSE_TX1 < MSE_TX2) { 
+  print("The linear model is better than the quadratic model for Texas AVB vs IBU")
+}else { print("The quadratic model is better than the linear model for Texas AVB vs IBU") }
+```
+
+
 
