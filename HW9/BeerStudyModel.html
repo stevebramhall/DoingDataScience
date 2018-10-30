@@ -381,72 +381,72 @@ testCO = subset(beerCOTX,beerCOTX$State==&quot;CO&quot;)[-train_indicesCO,] # CO
 <h4>Summary for Colorado Training Set</h4>
 <pre class="r"><code>summary(trainCO)</code></pre>
 <pre><code>##    BreweryID     BreweryName            City              State          
-##  Min.   :  7.0   Length:87          Length:87          Length:87         
-##  1st Qu.:111.0   Class :character   Class :character   Class :character  
-##  Median :167.0   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :226.2                                                           
-##  3rd Qu.:381.0                                                           
+##  Min.   : 38.0   Length:87          Length:87          Length:87         
+##  1st Qu.:120.0   Class :character   Class :character   Class :character  
+##  Median :221.0   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :263.1                                                           
+##  3rd Qu.:419.0                                                           
 ##  Max.   :524.0                                                           
 ##                                                                          
-##                          BeerName      BeerID       AlcoholByVolume  
-##  Dale's Pale Ale             : 4   Min.   :   1.0   Min.   :0.04200  
-##  Morning Wood Wheat (Current): 2   1st Qu.: 437.5   1st Qu.:0.05200  
-##  Ranger IPA                  : 2   Median : 955.0   Median :0.06300  
-##  1554 Black Lager            : 1   Mean   :1120.4   Mean   :0.06413  
-##  5:00 O'Clock Afternoon Ale  : 1   3rd Qu.:1744.5   3rd Qu.:0.07000  
-##  Agave Wheat                 : 1   Max.   :2644.0   Max.   :0.09900  
-##  (Other)                     :76                                     
+##                        BeerName      BeerID       AlcoholByVolume  
+##  Dale's Pale Ale           : 3   Min.   :   1.0   Min.   :0.04200  
+##  Fat Tire Amber Ale        : 2   1st Qu.: 596.5   1st Qu.:0.05300  
+##  Mama's Little Yella Pils  : 2   Median : 871.0   Median :0.06500  
+##  Modus Hoperandi           : 2   Mean   :1084.3   Mean   :0.06422  
+##  5:00 O'Clock Afternoon Ale: 1   3rd Qu.:1461.5   3rd Qu.:0.07050  
+##  American India Red Ale    : 1   Max.   :2563.0   Max.   :0.09500  
+##  (Other)                   :76                                     
 ##  BitternessUnits                           BeerStyle      Ounces     
-##  Min.   :  9.00   American IPA                  :15   Min.   :12.00  
-##  1st Qu.: 24.00   American Pale Ale (APA)       :14   1st Qu.:12.00  
-##  Median : 38.00   American Double / Imperial IPA: 7   Median :12.00  
-##  Mean   : 46.66   American Amber / Red Ale      : 5   Mean   :13.02  
-##  3rd Qu.: 65.00   American Pale Wheat Ale       : 4   3rd Qu.:12.00  
-##  Max.   :104.00   Czech Pilsener                : 4   Max.   :19.20  
-##                   (Other)                       :38                  
-##       IBU2      
-##  Min.   :   81  
-##  1st Qu.:  576  
-##  Median : 1444  
-##  Mean   : 2877  
-##  3rd Qu.: 4225  
-##  Max.   :10816  
+##  Min.   : 14.00   American Pale Ale (APA)       :16   Min.   :12.00  
+##  1st Qu.: 24.50   American IPA                  :13   1st Qu.:12.00  
+##  Median : 40.00   American Amber / Red Ale      : 6   Median :12.00  
+##  Mean   : 45.32   American Double / Imperial IPA: 6   Mean   :13.26  
+##  3rd Qu.: 65.00   Kölsch                        : 4   3rd Qu.:16.00  
+##  Max.   :104.00   American Pale Lager           : 3   Max.   :19.20  
+##                   (Other)                       :39                  
+##       IBU2        
+##  Min.   :  196.0  
+##  1st Qu.:  600.5  
+##  Median : 1600.0  
+##  Mean   : 2601.3  
+##  3rd Qu.: 4225.0  
+##  Max.   :10816.0  
 ## </code></pre>
 </div>
 <div id="summary-for-colorado-test-set" class="section level4">
 <h4>Summary for Colorado Test Set</h4>
 <pre class="r"><code>summary(testCO)</code></pre>
 <pre><code>##    BreweryID     BreweryName            City              State          
-##  Min.   : 38.0   Length:59          Length:59          Length:59         
-##  1st Qu.:108.0   Class :character   Class :character   Class :character  
-##  Median :265.0   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :278.7                                                           
-##  3rd Qu.:442.0                                                           
-##  Max.   :524.0                                                           
+##  Min.   :  7.0   Length:59          Length:59          Length:59         
+##  1st Qu.: 95.5   Class :character   Class :character   Class :character  
+##  Median :167.0   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :224.3                                                           
+##  3rd Qu.:399.0                                                           
+##  Max.   :521.0                                                           
 ##                                                                          
-##                                  BeerName      BeerID    
-##  Firestarter India Pale Ale          : 2   Min.   :   7  
-##  Avalanche Ale                       : 1   1st Qu.: 670  
-##  Avery Joe’s Premium American Pilsner: 1   Median : 785  
-##  Belgorado                           : 1   Mean   :1019  
-##  Car 21                              : 1   3rd Qu.:1453  
-##  Colorado Red Ale                    : 1   Max.   :2562  
-##  (Other)                             :52                 
-##  AlcoholByVolume   BitternessUnits                           BeerStyle 
-##  Min.   :0.04200   Min.   : 10.00   American Pale Ale (APA)       :11  
-##  1st Qu.:0.05350   1st Qu.: 27.00   American IPA                  : 8  
-##  Median :0.06500   Median : 45.00   American Amber / Red Ale      : 5  
-##  Mean   :0.06588   Mean   : 48.58   American Double / Imperial IPA: 4  
-##  3rd Qu.:0.07400   3rd Qu.: 67.50   Kölsch                        : 3  
-##  Max.   :0.09900   Max.   :100.00   Russian Imperial Stout        : 3  
-##                                     (Other)                       :25  
-##      Ounces           IBU2      
-##  Min.   :12.00   Min.   :  100  
-##  1st Qu.:12.00   1st Qu.:  730  
-##  Median :12.00   Median : 2025  
-##  Mean   :13.33   Mean   : 2995  
-##  3rd Qu.:16.00   3rd Qu.: 4556  
-##  Max.   :19.20   Max.   :10000  
+##                 BeerName      BeerID     AlcoholByVolume  
+##  Shift              : 2   Min.   :   4   Min.   :0.04200  
+##  1554 Black Lager   : 1   1st Qu.: 511   1st Qu.:0.05300  
+##  Agave Wheat        : 1   Median : 880   Median :0.06500  
+##  American Red Saison: 1   Mean   :1072   Mean   :0.06575  
+##  Apricot Blonde     : 1   3rd Qu.:1614   3rd Qu.:0.07250  
+##  Avalanche Ale      : 1   Max.   :2644   Max.   :0.09900  
+##  (Other)            :52                                   
+##  BitternessUnits                           BeerStyle      Ounces     
+##  Min.   :  9.00   American IPA                  :10   Min.   :12.00  
+##  1st Qu.: 24.50   American Pale Ale (APA)       : 9   1st Qu.:12.00  
+##  Median : 40.00   American Double / Imperial IPA: 5   Median :12.00  
+##  Mean   : 50.54   Russian Imperial Stout        : 5   Mean   :12.98  
+##  3rd Qu.: 71.00   American Amber / Red Ale      : 4   3rd Qu.:12.00  
+##  Max.   :100.00   American Pale Lager           : 2   Max.   :19.20  
+##                   (Other)                       :24                  
+##       IBU2        
+##  Min.   :   81.0  
+##  1st Qu.:  600.5  
+##  Median : 1600.0  
+##  Mean   : 3400.6  
+##  3rd Qu.: 5042.0  
+##  Max.   :10000.0  
 ## </code></pre>
 <pre class="r"><code>#Divide TX into training and test set into 60% training &amp; 40% test
 samplesizeTX=nrow(filter(beerCOTX,State==&quot;TX&quot;))
@@ -461,34 +461,34 @@ testTX = subset(beerCOTX,beerCOTX$State==&quot;TX&quot;)[-train_indicesTX,] # TX
 <pre><code>##    BreweryID     BreweryName            City              State          
 ##  Min.   : 30.0   Length:53          Length:53          Length:53         
 ##  1st Qu.:119.0   Class :character   Class :character   Class :character  
-##  Median :128.0   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :152.7                                                           
+##  Median :129.0   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :166.3                                                           
 ##  3rd Qu.:214.0                                                           
 ##  Max.   :427.0                                                           
 ##                                                                          
 ##                       BeerName      BeerID     AlcoholByVolume  
-##  18th Anniversary Gose    : 1   Min.   :  46   Min.   :0.04200  
-##  BLAKKR                   : 1   1st Qu.:1182   1st Qu.:0.05100  
-##  Block Party Robust Porter: 1   Median :2038   Median :0.05600  
-##  Bombshell Blonde         : 1   Mean   :1734   Mean   :0.06143  
-##  Broken Bridge            : 1   3rd Qu.:2212   3rd Qu.:0.06900  
-##  Buried Hatchet Stout     : 1   Max.   :2588   Max.   :0.09900  
+##  1836                     : 1   Min.   :  44   Min.   :0.04000  
+##  Alteration               : 1   1st Qu.:1091   1st Qu.:0.05000  
+##  Barn Burner Saison       : 1   Median :2042   Median :0.05500  
+##  Bat Outta Helles         : 1   Mean   :1723   Mean   :0.06006  
+##  Battle LIne              : 1   3rd Qu.:2211   3rd Qu.:0.06600  
+##  Block Party Robust Porter: 1   Max.   :2588   Max.   :0.09900  
 ##  (Other)                  :47                                   
 ##  BitternessUnits                           BeerStyle      Ounces     
-##  Min.   :  5.00   American IPA                  : 9   Min.   :12.00  
-##  1st Qu.: 21.00   American Pale Ale (APA)       : 6   1st Qu.:12.00  
-##  Median : 35.00   American Blonde Ale           : 5   Median :12.00  
-##  Mean   : 41.87   American Double / Imperial IPA: 3   Mean   :12.91  
-##  3rd Qu.: 50.00   Witbier                       : 3   3rd Qu.:12.00  
-##  Max.   :118.00   American Amber / Red Ale      : 2   Max.   :16.00  
+##  Min.   : 10.00   American Blonde Ale           : 7   Min.   :12.00  
+##  1st Qu.: 21.00   American Double / Imperial IPA: 5   1st Qu.:12.00  
+##  Median : 33.00   American IPA                  : 5   Median :12.00  
+##  Mean   : 40.55   American Pale Ale (APA)       : 4   Mean   :12.53  
+##  3rd Qu.: 50.00   Witbier                       : 4   3rd Qu.:12.00  
+##  Max.   :110.00   American Brown Ale            : 3   Max.   :16.00  
 ##                   (Other)                       :25                  
 ##       IBU2      
-##  Min.   :   25  
+##  Min.   :  100  
 ##  1st Qu.:  441  
-##  Median : 1225  
-##  Mean   : 2385  
+##  Median : 1089  
+##  Mean   : 2290  
 ##  3rd Qu.: 2500  
-##  Max.   :13924  
+##  Max.   :12100  
 ## </code></pre>
 </div>
 <div id="summary-for-texas-test-set" class="section level4">
@@ -496,28 +496,36 @@ testTX = subset(beerCOTX,beerCOTX$State==&quot;TX&quot;)[-train_indicesTX,] # TX
 <pre class="r"><code>summary(testTX)</code></pre>
 <pre><code>##    BreweryID     BreweryName            City              State          
 ##  Min.   : 30.0   Length:36          Length:36          Length:36         
-##  1st Qu.:126.0   Class :character   Class :character   Class :character  
-##  Median :135.0   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :169.9                                                           
-##  3rd Qu.:215.0                                                           
+##  1st Qu.:124.2   Class :character   Class :character   Class :character  
+##  Median :127.5   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :149.9                                                           
+##  3rd Qu.:192.5                                                           
 ##  Max.   :427.0                                                           
 ##                                                                          
-##                BeerName      BeerID     AlcoholByVolume   BitternessUnits 
-##  1836              : 1   Min.   :  44   Min.   :0.04000   Min.   :  5.00  
-##  Alteration        : 1   1st Qu.:1300   1st Qu.:0.04975   1st Qu.: 20.00  
-##  Barn Burner Saison: 1   Median :2070   Median :0.05250   Median : 26.00  
-##  Bat Outta Helles  : 1   Mean   :1733   Mean   :0.05869   Mean   : 38.22  
-##  Battle LIne       : 1   3rd Qu.:2185   3rd Qu.:0.06525   3rd Qu.: 40.50  
-##  Bombshell Blonde  : 1   Max.   :2600   Max.   :0.09500   Max.   :110.00  
-##  (Other)           :30                                                    
-##                           BeerStyle      Ounces           IBU2      
-##  American Double / Imperial IPA: 5   Min.   :12.00   Min.   :   25  
-##  Saison / Farmhouse Ale        : 5   1st Qu.:12.00   1st Qu.:  400  
-##  American Blonde Ale           : 4   Median :12.00   Median :  677  
-##  American Pale Ale (APA)       : 3   Mean   :12.67   Mean   : 2210  
-##  American Amber / Red Ale      : 2   3rd Qu.:12.00   3rd Qu.: 1641  
-##  American Brown Ale            : 2   Max.   :16.00   Max.   :12100  
-##  (Other)                       :15</code></pre>
+##                   BeerName      BeerID     AlcoholByVolume  
+##  18th Anniversary Gose: 1   Min.   : 464   Min.   :0.04400  
+##  BLAKKR               : 1   1st Qu.:1227   1st Qu.:0.05075  
+##  Bombshell Blonde     : 1   Median :2006   Median :0.05500  
+##  Broken Bridge        : 1   Mean   :1749   Mean   :0.06072  
+##  Brutus               : 1   3rd Qu.:2216   3rd Qu.:0.07000  
+##  Chupahopra           : 1   Max.   :2600   Max.   :0.09900  
+##  (Other)              :30                                   
+##  BitternessUnits                           BeerStyle      Ounces     
+##  Min.   :  5.00   American Pale Ale (APA)       : 5   Min.   :12.00  
+##  1st Qu.: 20.00   American IPA                  : 4   1st Qu.:12.00  
+##  Median : 30.00   American Double / Imperial IPA: 3   Median :12.00  
+##  Mean   : 40.17   American Amber / Red Ale      : 2   Mean   :13.22  
+##  3rd Qu.: 60.75   American Blonde Ale           : 2   3rd Qu.:16.00  
+##  Max.   :118.00   Dunkelweizen                  : 2   Max.   :16.00  
+##                   (Other)                       :18                  
+##       IBU2      
+##  Min.   :   25  
+##  1st Qu.:  400  
+##  Median :  925  
+##  Mean   : 2350  
+##  3rd Qu.: 3692  
+##  Max.   :13924  
+## </code></pre>
 </div>
 <div id="compare-linear-and-quadratic-models" class="section level4">
 <h4>13. Compare Linear and Quadratic Models</h4>
@@ -536,26 +544,16 @@ predsTestCO2 = predict(fitTrainCO2, newdata = testCO) # Model predictions using 
 </div>
 <div id="calculate-the-co-mses" class="section level4">
 <h4>Calculate the CO MSEs</h4>
-<pre class="r"><code>MSEholderTrainCO1 = sum((predsTrainCO1 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, linear
-MSEholderTestCO1 = sum((predsTestCO1 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, linear
-
-MSEholderTrainCO2 = sum((predsTrainCO2 - trainCO$AlcoholByVolume)^2)/(length(trainCO$AlcoholByVolume) - 2) # MSE Train, quadratic
-MSEholderTestCO2 = sum((predsTestCO2 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, quadratic
-
-MSE_CO1=abs(MSEholderTrainCO1-MSEholderTestCO1)
-MSE_CO2=abs(MSEholderTrainCO2-MSEholderTestCO2)</code></pre>
+<pre class="r"><code>MSEholderTestCO1 = sum((predsTestCO1 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, linear
+MSEholderTestCO2 = sum((predsTestCO2 - testCO$AlcoholByVolume)^2)/(length(testCO$AlcoholByVolume) - 2)     # MSE Test, quadratic</code></pre>
 </div>
 <div id="co-model-comparison-results" class="section level4">
 <h4>CO Model Comparison Results</h4>
-<pre><code>## [1] &quot;Colorado MSE for the Linear Model Training Data = 0.000115108684422325&quot;</code></pre>
-<pre><code>## [1] &quot;Colorado MSE for the Linear Model Test Data = 0.000122772860753894&quot;</code></pre>
-<pre><code>## [1] &quot;Colorado MSE for the Quadratic Model Training Data = 0.000113918556729831&quot;</code></pre>
-<pre><code>## [1] &quot;Colorado MSE for the Quadratic Model Test Data = 0.000120230454061071&quot;</code></pre>
-<pre><code>## [1] &quot;Colorado MSE Delta for the Linear Model = 7.66417633156906e-06&quot;</code></pre>
-<pre><code>## [1] &quot;Colorado MSE Delta for the Quadratic Model = 6.31189733123993e-06&quot;</code></pre>
+<pre><code>## [1] &quot;Colorado MSE for the Linear Model Test Data = 0.000147974768896928&quot;</code></pre>
+<pre><code>## [1] &quot;Colorado MSE for the Quadratic Model Test Data = 0.000143838824503225&quot;</code></pre>
 </div>
-<div id="since-the-mse-delta-for-the-linear-model-is-less-than-the-mse-delta-for-the-quadratic-model-the-linear-model-is-better-than-the-quadratic-model-for-colorado-avb-vs-ibu.-the-delta-is-the-absolute-value-of-the-difference-between-the-mse-training-and-test-data." class="section level4">
-<h4>Since the MSE Delta for the linear model is less than the MSE Delta for the quadratic model, the linear model is better than the quadratic model for Colorado AVB vs IBU. The Delta is the absolute value of the difference between the MSE training and test data.</h4>
+<div id="since-the-mse-for-the-linear-model-is-greater-than-the-mse-delta-for-the-quadratic-model-the-quadratic-model-is-better-than-the-linear-model-for-colorado-avb-vs-ibu.-the-difference-is-very-small.-the-next-step-might-be-to-check-if-this-difference-is-significant." class="section level4">
+<h4>Since the MSE for the linear model is greater than the MSE Delta for the quadratic model, the quadratic model is better than the linear model for Colorado AVB vs IBU. The difference is very small. The next step might be to check if this difference is significant.</h4>
 </div>
 <div id="models-fit-for-tx" class="section level4">
 <h4>Models fit for TX</h4>
@@ -571,26 +569,16 @@ predsTestTX2 = predict(fitTrainTX2, newdata = testTX) # Model predictions using 
 </div>
 <div id="calculate-the-tx-mses" class="section level4">
 <h4>Calculate the TX MSEs</h4>
-<pre class="r"><code>MSEholderTrainTX1 = sum((predsTrainTX1 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, linear
-MSEholderTestTX1 = sum((predsTestTX1 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, linear
-
-MSEholderTrainTX2 = sum((predsTrainTX2 - trainTX$AlcoholByVolume)^2)/(length(trainTX$AlcoholByVolume) - 2) # MSE Train, quadratic
-MSEholderTestTX2 = sum((predsTestTX2 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, quadratic
-
-MSE_TX1=abs(MSEholderTrainTX1-MSEholderTestTX1)
-MSE_TX2=abs(MSEholderTrainTX2-MSEholderTestTX2)</code></pre>
+<pre class="r"><code>MSEholderTestTX1 = sum((predsTestTX1 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, linear
+MSEholderTestTX2 = sum((predsTestTX2 - testTX$AlcoholByVolume)^2)/(length(testTX$AlcoholByVolume) - 2)     # MSE Test, quadratic</code></pre>
 </div>
 <div id="tx-model-comparison-results" class="section level4">
 <h4>TX Model Comparison Results</h4>
-<pre><code>## [1] &quot;MSE for the Linear Model Training Data = 9.68637524303769e-05&quot;</code></pre>
-<pre><code>## [1] &quot;MSE for the Linear Model Test Data = 6.62159465862013e-05&quot;</code></pre>
-<pre><code>## [1] &quot;MSE for the Quadratic Model Training Data = 9.53015460972572e-05&quot;</code></pre>
-<pre><code>## [1] &quot;MSE for the Quadratic Model Test Data = 6.71439879458654e-05&quot;</code></pre>
-<pre><code>## [1] &quot;MSE Delta for the Linear Model = 3.06478058441755e-05&quot;</code></pre>
-<pre><code>## [1] &quot;MSE Delta for the Quadratic Model = 2.81575581513918e-05&quot;</code></pre>
+<pre><code>## [1] &quot;MSE for the Linear Model Test Data = 9.27607423190502e-05&quot;</code></pre>
+<pre><code>## [1] &quot;MSE for the Quadratic Model Test Data = 9.19665692590266e-05&quot;</code></pre>
 </div>
-<div id="since-the-mse-delta-for-the-linear-model-is-less-than-the-mse-delta-for-the-quadratic-model-the-linear-model-is-better-than-the-quadratic-model-for-texas-avb-vs-ibu.-the-delta-is-the-absolute-value-of-the-difference-between-the-mse-training-and-test-data." class="section level4">
-<h4>Since the MSE Delta for the linear model is less than the MSE Delta for the quadratic model, the linear model is better than the quadratic model for Texas AVB vs IBU. The Delta is the absolute value of the difference between the MSE training and test data.</h4>
+<div id="since-the-mse-for-the-linear-model-is-greater-than-the-mse-delta-for-the-quadratic-model-the-quadratic-model-is-better-than-the-linear-model-for-texas-avb-vs-ibu.-the-difference-is-very-small.-the-next-step-might-be-to-check-if-this-difference-is-significant." class="section level4">
+<h4>Since the MSE for the linear model is greater than the MSE Delta for the quadratic model, the quadratic model is better than the linear model for Texas AVB vs IBU. The difference is very small. The next step might be to check if this difference is significant.</h4>
 </div>
 <div id="github-location-httpsgithub.comstevebramhalldoingdatasciencetreemasterhw9" class="section level4">
 <h4>Github Location: <a href="https://github.com/stevebramhall/DoingDataScience/tree/master/HW9" class="uri">https://github.com/stevebramhall/DoingDataScience/tree/master/HW9</a></h4>
