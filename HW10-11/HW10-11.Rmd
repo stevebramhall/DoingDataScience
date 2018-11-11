@@ -1,0 +1,104 @@
+---
+title: "DDS HW10-11"
+author: "Steve Bramhall"
+date: "November 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE}
+library(dplyr)      # for string functions
+library(stringr)    # for str_trim function
+library(caret)      # for classification & regression training
+library(mlr)        # for machine learing
+library(FNN)        # for knn.reg function
+```
+
+
+###A. Clean and prepare the 
+
+####1. First read the two data sets into data frames beerDF and breweryDF from csv files. The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.Create column for Brewery ID that is common to both datasets. Create column for brewery ID that is common to both datasets similar to what you did in the project. So we can merge!
+```{r echo = TRUE}
+# Read beer data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
+beerDF <- read.csv(".\\InputFiles\\Beers.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+names(beerDF) <- c("BeerName","BeerID","ABV","IBU","BreweryID","BeerStyle","Ounces") # rename table columns
+
+# Read brewery data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
+breweryDF <- read.csv(".\\InputFiles\\Breweries.csv",header=TRUE,sep=",",stringsAsFactors = FALSE)
+names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
+```
+
+####2. Merge the beer and brewery data sets into a sigle dataframe.
+```{r echo = TRUE}
+#Merge brewery and beer data into the brewDataDF data frame
+allBeerDataDF <- merge.data.frame(breweryDF,beerDF,by="BreweryID")
+```
+
+####3. Remove surrounding whitespace for State info
+```{r echo = TRUE}
+allBeerDataDF$State <- sapply(allBeerDataDF$State, str_trim)    # remove surrounding whitespace to state col
+```
+
+####4. Create a separate data set with only CO & TX beer and remove IBU's with NA's.
+```{r echo = TRUE}
+beerCOTX=subset(allBeerDataDF,(allBeerDataDF$State=="CO" | allBeerDataDF$State=="TX") & !is.na(IBU))
+```
+
+####5. Order beerCOTX by IBU (ascending)
+```{r echo = TRUE}
+beerCOTX <- beerCOTX[with(beerCOTX,order(IBU)),] # sort by IBU, ascending
+```
+
+####6. For this assignment we will concentrate only on the Texas data!  Create a training and test set from the data (60%/40% split respectively).  Print a summary of each new data frame… there should be two: TrainingTX, TestTX.  
+```{r}
+# creating subset for TX, easier to work with
+beerTX=subset(beerCOTX,beerCOTX$State=="TX") 
+beerTX=data.frame(IBU=beerTX$IBU,ABV=beerTX$ABV)
+#Divide TX into training and test set into 60% training & 40% test
+samplesizeTX=nrow(beerTX)
+train_percent = .6
+train_indicesTX = sample(seq(1,samplesizeTX,length = samplesizeTX),train_percent*samplesizeTX)
+trainingTX = beerTX[train_indicesTX,] # TX random training data from original data
+testTX = beerTX[-train_indicesTX,] # TX random test data from original data
+
+#This code code is used to check the training and test data sets
+length.train = length(trainingTX$IBU)
+length.test = length(testTX$IBU)
+
+percent.test = length.test/(length.test+length.train)
+percent.train = length.train/(length.test+length.train)
+percent.test
+percent.train
+
+summarizeColumns(trainingTX)
+summarizeColumns(testTX)
+```
+
+####7. Using the training data, fit a KNN regression model to predict ABV from IBU.  You should use the knnreg function in the caret package.  Fit two separate models: one with k = 3 and one with k = 5.  (This is 2 models total.)
+```{r}
+plot(trainingTX$IBU,trainingTX$ABV,main = "KNN")
+text(trainingTX$IBU,trainingTX$ABV,labels = trainingTX$IBU,pos=4,col="blue")
+
+#knnreg(trainingTX,testTX,trainingTX$ABV,k=3)
+
+fit = knnreg(trainingTX,testTX$ABV,k=3)
+predict(fit,testTX$IBU)
+```
+
+####8. Use the ASE loss function and external cross validation to provide evidence as to which model (k = 3 or k = 5) is more appropriate.  Remember your answer should be supported with why you feel a certain model is appropriate.  Your analysis should include the average squared error (ASE) for each model from the test set.  Your analysis should also include a clear discussion, using the ASEs, as to which model you feel is more appropriate.
+
+####9. Now use the ASE loss function and external cross validation to provide evidence as to which model (the linear regression model from last week or the “best” KNN regression model from this week (from question 10)) is more appropriate. 
+
+####10. Use your “best” KNN regression model to predict the ABV for an IBU of 150, 170 and 190.  What issue do you see with using KNN to extrapolate?    
+
+####11. Filter the beerCOTX dataframe for only beers that are from Texas and are American IPA and American Pale Ale.
+
+####10. Divide this filtered data set into a training and test set (60/40, training / test split).  
+
+####12.Use the class package’s knn function to build an KNN classifier with k = 3 that will use ABV and IBU as features (explanatory variables) to classify Texas beers as American IPA or American Pale Ale using the Training data.  Use your test set to create a confusion table to estimate the accuracy, sensitivity and specificity of the model.  
+
+####13. Using the same process as in the last question, find the accuracy, sensitivity and specificity of a KNN model with k = 5.  Which is “better”?  Why?
+
