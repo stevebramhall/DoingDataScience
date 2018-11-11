@@ -14,7 +14,7 @@ library(dplyr)      # for string functions
 library(stringr)    # for str_trim function
 library(caret)      # for classification & regression training
 library(mlr)        # for machine learing
-library(FNN)        # for knn.reg function
+#library(FNN)        # for knn.reg function
 ```
 
 
@@ -50,6 +50,7 @@ beerCOTX=subset(allBeerDataDF,(allBeerDataDF$State=="CO" | allBeerDataDF$State==
 ####5. Order beerCOTX by IBU (ascending)
 ```{r echo = TRUE}
 beerCOTX <- beerCOTX[with(beerCOTX,order(IBU)),] # sort by IBU, ascending
+beerCOTX$IBU <- sapply(beerCOTX$IBU,as.numeric)  # make IBU numeric
 ```
 
 ####6. For this assignment we will concentrate only on the Texas data!  Create a training and test set from the data (60%/40% split respectively).  Print a summary of each new data frame… there should be two: TrainingTX, TestTX.  
@@ -81,10 +82,10 @@ summarizeColumns(testTX)
 ```{r}
 plot(trainingTX$IBU,trainingTX$ABV,main = "KNN")
 text(trainingTX$IBU,trainingTX$ABV,labels = trainingTX$IBU,pos=4,col="blue")
-
+points(testTX$IBU,testTX$ABV,col="red",pch=15)
 #knnreg(trainingTX,testTX,trainingTX$ABV,k=3)
 
-fit = knnreg(trainingTX,testTX$ABV,k=3)
+fit = knnreg(x=trainingTX,y=testTX$ABV,k=3)
 predict(fit,testTX$IBU)
 ```
 
