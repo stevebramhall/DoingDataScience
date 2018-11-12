@@ -15,18 +15,16 @@ library(stringr)    # for str_trim function
 library(caret)      # for classification & regression training
 library(mlr)        # for machine learing
 library(class)      # for classification funtions
-#library(FNN)        # for knn.reg function
 ```
 
 
-###A. Clean and prepare the 
+###A. Clean and prepare the data
 
 ####1. First read the two data sets into data frames beerDF and breweryDF from csv files. The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.Create column for Brewery ID that is common to both datasets. Create column for brewery ID that is common to both datasets similar to what you did in the project. So we can merge!
 ```{r echo = TRUE}
 # Read beer data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
 beerDF <- read.csv(".\\InputFiles\\Beers.csv",header=TRUE,sep=",",stringsAsFactors = FALSE, encoding = "UTF-8")
 names(beerDF) <- c("BeerName","BeerID","ABV","IBU","BreweryID","BeerStyle","Ounces") # rename table columns
-
 # Read brewery data from csv file and put into breweryDF data frame.Then rename columns to be more readable.
 breweryDF <- read.csv(".\\InputFiles\\Breweries.csv",header=TRUE,sep=",",stringsAsFactors = FALSE)
 names(breweryDF) <- c("BreweryID","BreweryName","City","State") # rename table columns
@@ -60,7 +58,6 @@ beerCOTX$IBU <- sapply(beerCOTX$IBU,as.numeric)  # make IBU numeric
 beerTX=subset(beerCOTX,beerCOTX$State=="TX") 
 beerTX=data.frame(IBU=beerTX$IBU,ABV=beerTX$ABV,Style=beerTX$BeerStyle)
 beerTX$Style = as.character(beerTX$Style)
-
 #Divide TX into training and test set into 60% training & 40% test
 samplesizeTX=nrow(beerTX)
 train_percent = .6
@@ -68,26 +65,15 @@ train_indicesTX = sample(seq(1,samplesizeTX,length = samplesizeTX),train_percent
 trainingTX = beerTX[train_indicesTX,] # TX random training data from original data
 testTX = beerTX[-train_indicesTX,] # TX random test data from original data
 
-#This code code is used to check the training and test data sets
-length.train = length(trainingTX$IBU)
-length.test = length(testTX$IBU)
-
-percent.test = length.test/(length.test+length.train)
-percent.train = length.train/(length.test+length.train)
-percent.test
-percent.train
-
 summarizeColumns(trainingTX)
 summarizeColumns(testTX)
+
+summarize(trainingTX)
+summarize(testTX)
 ```
 
 ####7. Using the training data, fit a KNN regression model to predict ABV from IBU.  You should use the knnreg function in the caret package.  Fit two separate models: one with k = 3 and one with k = 5.  (This is 2 models total.)
 ```{r}
-
-plot(trainingTX$IBU,trainingTX$ABV,main = "KNN")
-text(trainingTX$IBU,trainingTX$ABV,labels = trainingTX$IBU,pos=4,col="blue")
-points(testTX$IBU,testTX$ABV,col="red",pch=15)
-
 trainingTX.x=data.frame(IBU=trainingTX$IBU)      # Must be DF since there could be multiple explanatory variables
 trainingTX.y=trainingTX$ABV                      # Must be a vector 
 testTX.x=data.frame(IBU=testTX$IBU)              # Should be DF in case more explanatory variables are added
@@ -99,8 +85,6 @@ fit.k5=knnreg(x=trainingTX.x,y=trainingTX.y,k=5)
 # predict(model,explanatoryTestDF)
 knn.k3=predict(fit.k3,testTX.x)                  
 knn.k5=predict(fit.k5,testTX.x)
-
-
 par(mfrow=c(1,2))
 plot(knn.k3,testTX$ABV,main = "KNN-k3")
 plot(knn.k5,testTX$ABV,main = "KNN-k5")
@@ -111,6 +95,8 @@ plot(knn.k5,testTX$ABV,main = "KNN-k5")
 ```{r}
 ASE.k3=((sum(knn.k3-testTX$ABV))^2)/length(testTX$ABV)
 ASE.k5=((sum(knn.k5-testTX$ABV))^2)/length(testTX$ABV)
+ASE.k3
+ASE.k5
 ```
 
 ##### Both models produced great results but the k=3 KNN model produced better results than the k=5.
@@ -120,20 +106,16 @@ ASE.k5=((sum(knn.k5-testTX$ABV))^2)/length(testTX$ABV)
 ```{r}
 #fit the first model to the training set
 linear.fit.TX = lm(ABV~IBU, data = trainingTX)
-
 #get predictions for the test data from the model fit on the training data
 linear.predict.TX = predict(linear.fit.TX,newdata = testTX.x)
-
 #Calculate the RMSE loss function
 ASE.linear=((sum((testTX$ABV-linear.predict.TX)^2)/length(testTX$ABV))) 
-
 ASE.k3
 ASE.k5
 ASE.linear
-
 ```
 
-#### KNN, k=3 model works best.
+##### Depending on the execution, KNN k=3 model works best but sometimes the linear model will work best. This is due to the random generation of the training and test data.
 
 ####10. Use your “best” KNN regression model to predict the ABV for an IBU of 150, 170 and 190.  What issue do you see with using KNN to extrapolate?    
 
@@ -142,13 +124,14 @@ knn.k3=predict(fit.k3,c(150,170,190))
 knn.k3
 ```
 
+#####The values are all the same. This probably due to them being outlier extrapolations.
+
 ####11. Filter the beerCOTX dataframe for only beers that are from Texas and are American IPA and American Pale Ale.
 ```{r}
 # Get Beer Style Indices
 IPA.indices=grep("American IPA", beerTX$Style)
 Ale.indices=grep("American Pale Ale", beerTX$Style)
 IPA.Ale.indices = append(IPA.indices,Ale.indices)
-
 beerTX2 = beerTX[IPA.Ale.indices,]
 factor(beerTX2)
 ```
@@ -169,12 +152,25 @@ test.beerstyle = beerTX2[-train_indicesTX2,3]
 ```{r}
 #training.beerstyle =trainingTX2$Style
 knn2.k3 = knn(trainingTX2,testTX2,cl=training.beerstyle,k=3)
+confusionMatrix(table(test.beerstyle,knn2.k3))
 ```
 
 ####14. Using the same process as in the last question, find the accuracy, sensitivity and specificity of a KNN model with k = 5.  Which is “better”?  Why?
 ```{r}
 knn2.k5 = knn(trainingTX2,testTX2,cl=training.beerstyle,k=5)
 confusionMatrix(table(test.beerstyle,knn2.k5))
-
 ```
+
+##### The models are equivalent. They both produced the same accuracy, sensitivity, and specificity.
+
+####BONUS
+##### Leave-out-one CV is a type of cross validation where the model is run on all but one observation, then the model is used to predict the one observation left out. The process is performed for each observation.
+```{r}
+knncv.k3 = knn.cv(trainingTX2,cl=training.beerstyle,k=3)
+knncv.k5 = knn.cv(trainingTX2,cl=training.beerstyle,k=5)
+table(knncv.k3)
+table(knncv.k5)
+```
+
+##### The performance is the same for k=3 and k=5. You could use either.
 
