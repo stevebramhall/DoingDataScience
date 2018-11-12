@@ -1,0 +1,187 @@
+---
+title: "DDS HW Unit 11"
+author: "Steve Bramhall"
+date: "November 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### Install Libraries
+```{r}
+#install.packages("devtools")
+#devtools::install_github("mkearney/nytimes")
+library(nytimes)
+library(jsonlite) # for working with json format
+library(dplyr)    # for piping %>%
+library(ggplot2)  # for plotting
+```
+
+##### Get NY Times API Key
+```{r}
+file.name="D:\\Steve\\SMU Data Science\\Courses\\Refs\\Python and R Bridge\\NYTimesAPI.txt"
+NYTIMES_KEY  <- readChar(file.name,file.info(file.name)$size)
+```
+
+#### Create List from NY Times Query
+```{r}
+nytimes.search = paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=mueller&api-key=",NYTIMES_KEY)
+```
+
+#### Creat Dataframe from NY Time Query
+```{r}
+x <- fromJSON(nytimes.search,flatten=TRUE) %>% data.frame()
+```
+
+#### Set Search Parmeters. "Central Park Jogger", DATES = 1989-1999
+```{r}
+# Let's set some parameters
+term <- "central+park+jogger" # Need to use + to string together separate words
+begin_date <- "19890101"
+end_date <- "19891028"
+
+baseurl <- paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=",term,
+                  "&begin_date=",begin_date,"&end_date=",end_date,
+                  "&facet_filter=true&api-key=",NYTIMES_KEY, sep="")
+```
+
+#### Add More Pages of NY Times Data
+```{r}
+initialQuery <- fromJSON(baseurl)
+maxPages <- round((initialQuery$response$meta$hits[1] / 10)-1) 
+
+# For knit timing delay
+#for(i in 1:100000000) { j = (i + 1 -1 )/i }
+
+pages <- list()       # create place holder
+for(i in 0:maxPages){
+  nytSearch <- fromJSON(paste0(baseurl, "&page=", i), flatten = TRUE) %>% data.frame() 
+  message("Retrieving page ", i)
+  pages[[i+1]] <- nytSearch 
+  Sys.sleep(1) 
+}
+
+# combine all pages into one DF
+allNYTSearch <- rbind_pages(pages)
+head(allNYTSearch)
+```
+
+#### Visualize Sections for Central Park Jogger Case
+```{r}
+# Visualize coverage by section
+allNYTSearch %>% 
+  group_by(response.docs.type_of_material) %>%
+  summarize(count=n()) %>%
+  mutate(percent = (count / sum(count))*100) %>%
+  ggplot() +
+  geom_bar(aes(y=percent, x=response.docs.type_of_material, fill=response.docs.type_of_material), stat = "identity") + coord_flip()
+
+allNYTSearch %>%
+  mutate(pubDay=gsub("T.*","",response.docs.pub_date)) %>%
+  group_by(pubDay) %>%
+  summarise(count=n()) %>%
+  #filter(count >= 2) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(pubDay, count), y=count), stat="identity") + coord_flip()
+```
+
+#### PART 2, Probability Stuff
+```{r}
+#Make another column of News versus Other ... The labels
+
+allNYTSearch$NewsOrOther = ifelse(allNYTSearch$response.docs.type_of_material == "News","News","Other")
+
+key_word = 'I'
+
+#Split data into News and Other
+NewsGroup = allNYTSearch[allNYTSearch$NewsOrOther == "News",]
+OtherGroup = allNYTSearch[allNYTSearch$NewsOrOther == "Other",]
+
+#P(News) and P(Other)
+pNews = dim(NewsGroup)[1] / (dim(NewsGroup)[1] + dim(OtherGroup)[1])
+pOther = 1 - pNews
+
+#P(key_word | News), Look for key_word in the Main Headlines of News Articles
+pKWGivenNews = length(grep(key_word,NewsGroup$response.docs.headline.main,ignore.case = TRUE))/dim(NewsGroup)[1]
+
+#P(key_word | other), Look for key_word in the Main Headlines of Non-News Articles
+pKWGivenOther = length(grep(key_word,OtherGroup$response.docs.headline.main,ignore.case = TRUE))/dim(OtherGroup)[1]
+
+#P(key_word) in All Articles
+pKW = length(grep(key_word,allNYTSearch$response.docs.headline.main,ignore.case = TRUE))/dim(allNYTSearch)[1]
+
+#P(New | key_word)
+pNewsGivenKW = pKWGivenNews*pNews/pKW
+
+#P(Other | key_word)
+pOtherGivenKW = pKWGivenOther*pOther/pKW
+
+#print P(News | key_word)
+pNewsGivenKW 
+
+```
+
+#### Part 3
+```{r}
+#This function .... 
+Pnews_word = function(key_word = "jogging", trainingSet) #jogging = default
+{
+  print(key_word)
+  NewsGroup = trainingSet[trainingSet$NewsOrOther == "News",]
+  OtherGroup = trainingSet[trainingSet$NewsOrOther == "Other",]
+
+  pNews = dim(NewsGroup)[1] / (dim(NewsGroup)[1] + dim(OtherGroup)[1])
+  pOther = 1 - pNews
+
+  # search in snippets
+  pKWGivenNews = length(grep(key_word,NewsGroup$response.docs.snippet,ignore.case = TRUE))/dim(NewsGroup)[1]    #P(keyword | News)
+  pKWGivenOther = length(grep(key_word,OtherGroup$response.docs.snippet,ignore.case = TRUE))/dim(OtherGroup)[1] #P(keyword | Other)
+
+  pKW = length(grep(key_word,trainingSet$response.docs.snippet,ignore.case = TRUE))/dim(trainingSet)[1]         #P(keyword)
+
+  pNewsGivenKW = pKWGivenNews*pNews/pKW                                                                         #P(News | keyword)
+  pOtherGivenKW = pKWGivenOther*pOther/pKW                                                                      #P(Other | keyword)
+
+  return(pNewsGivenKW)
+}
+
+theScoreHolderNews = c()
+theScoreHolderOther = c()
+articleScoreNews = 0;
+articleScoreOther = 0;
+
+for (i in 1 : dim(allNYTSearch)[1])  #This loop iterates over every article
+{
+   articleScoreNews = 0; 
+   articleScoreOther = 0;
+   
+#strsplit(gsub("[^[:alnum:] ]", "", str), " +")
+#strsplit(allNYTSearch$response.docs.headline.main[i],split = " ")
+   
+  theText = unlist(strsplit(gsub("[^[:alnum:] ]", "", allNYTSearch$response.docs.snippet[i]), " +")) # get snippet text
+  for(j in 1 : length(theText))  #This loop iterates over each word in the snipet 
+  {
+    articleScoreNews = articleScoreNews + Pnews_word(theText[j],allNYTSearch) # send to training set, adds P(News|keyword)
+    articleScoreOther = articleScoreOther + (1 - Pnews_word(theText[j],allNYTSearch))
+  }
+  theScoreHolderNews[i] = articleScoreNews
+  theScoreHolderOther[i] = articleScoreOther
+}
+
+# Classify the aricle as News or Other based on a given piece of information from the article.
+allNYTSearch$Classified = ifelse(theScoreHolderNews > theScoreHolderOther,"News","Other")
+
+#Confusion Matrix
+table(allNYTSearch$NewsOrOther,allNYTSearch$Classified)
+
+```
+
+
+#####Assignment due Monday 11/12 11:59PM
+##### (1) Look at snippet instead of headline 
+##### (2) Look at data from 1989-1999
+##### (3) Provide external cross validation (50%/50%). Create a training & test set from the total number of articles-randomly. Train the classifier on the training set and create the confusion matrix from the test set.
+##### (4) Provide accuracy, sensitivity, and specificity from the confusion matrix. You may consider news to be a positive.
+
