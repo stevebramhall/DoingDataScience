@@ -1,0 +1,52 @@
+---
+title: "Stock Analysis"
+author: "Steve Bramhall"
+date: "November 15, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE}
+library(quantmod)
+library(fpp)
+```
+
+```{r}
+getSymbols("WMT",from="2018-07-01",to="2018-11-15")
+chartSeries(WMT)
+plot(WMT$WMT.Close,ylab="Price",xlab="Time",main="Walmart Stock",fcol="white")
+
+fit.ses1 <- ses(WMT$WMT.Close,h=3,alpha=.2,initial="simple")
+fit.ses2 <- ses(WMT$WMT.Close,h=3,alpha=.6,initial="simple")
+fit.ses3 <- ses(WMT$WMT.Close,h=3)
+plot(fit.ses1,ylab="Price",xlab="Time",main="Walmart Stock",fcol="white")
+lines(fitted(fit.ses1),col="blue")
+lines(fitted(fit.ses2),col="red")
+lines(fitted(fit.ses3),col="green")
+legend("topleft",lty=1,col=c(1,"blue","red","green"),
+       c("data",expression(alpha==0.2),expression(alpha==0.6),
+         expression(alpha==0.89)),pch=1)
+
+fit.holt1 <- holt(WMT$WMT.Close,h=3,alpha=0.8,beta=0.2,initial="simple")
+fit.holt2 <- holt(WMT$WMT.Close,h=3,alpha=0.8,beta=0.2,initial="simple",exponential=TRUE)
+fit.holt1$mode$state
+fitted(fit.holt1)
+fit.holt1$mean
+
+plot(fit.holt2,ylab="Price",xlab="Time",main="Holt's Forecast-Walmart Stock",fcol="white")
+lines(fitted(fit.holt1),col="blue")
+lines(fitted(fit.holt2),col="red")
+legend("topleft",lty=1,col=c(1,"blue","red"),
+       c("data","Linear Trend","Exponential Trend"),pch=1)
+
+# add damping
+fit.holt3 <- holt(WMT$WMT.Close,alpha=0.8,beta=0.2,damped=TRUE,initial="simple",h=3)
+lines(fitted(fit.holt3),col="darkgreen")
+
+accuracy(fit.holt1,WMT$WMT.Close)
+
+```
+

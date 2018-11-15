@@ -17,6 +17,7 @@ library(nytimes)
 library(jsonlite) # for working with json format
 library(dplyr)    # for piping %>%
 library(ggplot2)  # for plotting
+library(caret)
 ```
 
 ##### Get NY Times API Key
@@ -40,7 +41,7 @@ x <- fromJSON(nytimes.search,flatten=TRUE) %>% data.frame()
 # Let's set some parameters
 term <- "central+park+jogger" # Need to use + to string together separate words
 begin_date <- "19890101"
-end_date <- "19891028"
+end_date <- "19991231"
 
 baseurl <- paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=",term,
                   "&begin_date=",begin_date,"&end_date=",end_date,
@@ -60,7 +61,7 @@ for(i in 0:maxPages){
   nytSearch <- fromJSON(paste0(baseurl, "&page=", i), flatten = TRUE) %>% data.frame() 
   message("Retrieving page ", i)
   pages[[i+1]] <- nytSearch 
-  Sys.sleep(1) 
+  Sys.sleep(3) 
 }
 
 # combine all pages into one DF
@@ -78,13 +79,6 @@ allNYTSearch %>%
   ggplot() +
   geom_bar(aes(y=percent, x=response.docs.type_of_material, fill=response.docs.type_of_material), stat = "identity") + coord_flip()
 
-allNYTSearch %>%
-  mutate(pubDay=gsub("T.*","",response.docs.pub_date)) %>%
-  group_by(pubDay) %>%
-  summarise(count=n()) %>%
-  #filter(count >= 2) %>%
-  ggplot() +
-  geom_bar(aes(x=reorder(pubDay, count), y=count), stat="identity") + coord_flip()
 ```
 
 #### PART 2, Probability Stuff
@@ -128,7 +122,7 @@ pNewsGivenKW
 #This function .... 
 Pnews_word = function(key_word = "jogging", trainingSet) #jogging = default
 {
-  print(key_word)
+#  print(key_word)
   NewsGroup = trainingSet[trainingSet$NewsOrOther == "News",]
   OtherGroup = trainingSet[trainingSet$NewsOrOther == "Other",]
 
@@ -163,8 +157,11 @@ for (i in 1 : dim(allNYTSearch)[1])  #This loop iterates over every article
   theText = unlist(strsplit(gsub("[^[:alnum:] ]", "", allNYTSearch$response.docs.snippet[i]), " +")) # get snippet text
   for(j in 1 : length(theText))  #This loop iterates over each word in the snipet 
   {
-    articleScoreNews = articleScoreNews + Pnews_word(theText[j],allNYTSearch) # send to training set, adds P(News|keyword)
-    articleScoreOther = articleScoreOther + (1 - Pnews_word(theText[j],allNYTSearch))
+#    articleScoreNews = articleScoreNews + Pnews_word(theText[j],allNYTSearch) # send to training set, adds P(News|keyword)
+#    articleScoreOther = articleScoreOther + (1 - Pnews_word(theText[j],allNYTSearch))
+    articleScoreNews = articleScoreNews + Pnews_word(key_word,allNYTSearch) # send to training set, adds P(News|keyword)
+    articleScoreOther = articleScoreOther + (1 - Pnews_word(key_word,allNYTSearch))
+
   }
   theScoreHolderNews[i] = articleScoreNews
   theScoreHolderOther[i] = articleScoreOther
