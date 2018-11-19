@@ -1,0 +1,78 @@
+---
+title: "Time Series HW 12"
+author: "Steve Bramhall"
+date: "November 16, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(xts)
+library(dygraphs)
+library(fpp2)
+library(ggplot2)
+library(dplyr)
+```
+
+
+#### 1a. Natively in R, you have access to sample data sets of prominent stocks over time.  We’ll be using EuStockMarkets for this question.  Type help(EuStockMarkets) to learn more.  From these data, pull specifically the DAX index.  For all questions in this assignment, you’re welcome to normalize (or don’t!) how you see fit, but, if you choose to, please document what you’re doing and why for the grader.  It’s not necessary for the purpose of this assignment.
+
+```{r}
+eu <- EuStockMarkets
+head(eu[,1]) # column 1 is the DAX
+```
+
+#### 1b. These are annual European Stock Data from 1990 onward.  Create a rudimentary plot of the data.  Make the line blue.  Give an informative title.  Label the axes accurately.  In 1997, an event happened you want to indicate; add a vertical red line to your plot which divides pre-1997 and post-1997 information.
+```{r}
+tsDAX <- EuStockMarkets[,"DAX"]
+plot(tsDAX,col="blue",main="DAX Performance from 1990",ylab="EURO",xlab="Year")
+abline(v=1997,col="red")
+```
+
+#### 1c. Decompose the time series into its components (i.e., trend, seasonality, random).  Keep in mind that this is a multiplicative model you want.  Create a plot of all decomposed components.  As before, make all lines blue and have a vertical divider at the year 1997
+
+```{r}
+decompDAX <- decompose(tsDAX, type = "mult")
+plot(decompDAX, col="blue")
+abline(v=1997, col="red")
+```
+
+#### 2a. Using the maxtemp dataset granted by loading fpp2, there are maximum annual temperature data in Celsius.  For more information, use help(maxtemp).  To see what you’re looking at, execute the command in ‘Examples’ in the help document.
+```{r}
+head(maxtemp)
+autoplot(maxtemp, xlab="Year", ylab="Temperature (C)")
+```
+
+#### 2b. We are only concerned with information after 1990.  Please eliminate unwanted information or subset information we don’t care about.
+```{r}
+tsTemp <- window(maxtemp, start=1990)
+autoplot(tsTemp, xlab="Year", ylab="Temperature (C)")
+```
+
+#### 2c. Utilize SES to predict the next five years of maximum temperatures in Melbourne.  Plot this information, including the prior information and the forecast.  Add the predicted value line across 1990-present as a separate line, preferably blue.  So, to review, you should have your fit, the predicted value line overlaying it, and a forecast through 2021, all on one axis. Find the AICc and BIC of this fitted model.  You will use that information later.
+```{r}
+fit <- ses(tsTemp, h=5)
+plot(fit,main="Compare Forecast Fit",xlab="Year", ylab="Temperature (C)")
+lines(fitted(fit), col="blue")
+lines(fit$mean, col="blue",type="o")
+```
+
+#### 2d. Now use a damped Holt’s linear trend to also predict out five years.  Make sure initial=“optimal.”  As above, create a similar plot to 1C, but use the Holt fit instead.
+```{r}
+
+```
+
+#### 2e. Compare the AICc and BIC of the ses() and holt() models.  Which model is better here?
+```{r}
+
+```
+
+#### 2f.	Calculate and compare the ASE from the ses() and holt() models.  Which one performs better with respect to this metric?
+```{r}
+
+```
+
+
