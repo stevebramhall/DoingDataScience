@@ -54,25 +54,64 @@ autoplot(tsTemp, xlab="Year", ylab="Temperature (C)")
 
 #### 2c. Utilize SES to predict the next five years of maximum temperatures in Melbourne.  Plot this information, including the prior information and the forecast.  Add the predicted value line across 1990-present as a separate line, preferably blue.  So, to review, you should have your fit, the predicted value line overlaying it, and a forecast through 2021, all on one axis. Find the AICc and BIC of this fitted model.  You will use that information later.
 ```{r}
-fit <- ses(tsTemp, h=5)
-plot(fit,main="Compare Forecast Fit",xlab="Year", ylab="Temperature (C)")
-lines(fitted(fit), col="blue")
-lines(fit$mean, col="blue",type="o")
+fit.ses <- ses(tsTemp, h=5)
+plot(fit.ses,main="Compare Forecast Fit",xlab="Year", ylab="Temperature (C)")
+lines(fitted(fit.ses), col="blue")
+lines(fit.ses$mean, col="blue",type="o")
 ```
 
 #### 2d. Now use a damped Holt’s linear trend to also predict out five years.  Make sure initial=“optimal.”  As above, create a similar plot to 1C, but use the Holt fit instead.
 ```{r}
-
+fit.holt <- holt(tsTemp,damped=TRUE, h=5)
+plot(fit.holt,main="Compare Forecast Holt Fit",xlab="Year", ylab="Temperature (C)")
+lines(fitted(fit.holt), col="blue")
+lines(fit.holt$mean, col="blue",type="o")
 ```
 
 #### 2e. Compare the AICc and BIC of the ses() and holt() models.  Which model is better here?
 ```{r}
-
+summary(fit.ses)
+summary(fit.holt)
 ```
+
+##### The ses model is better.
 
 #### 2f.	Calculate and compare the ASE from the ses() and holt() models.  Which one performs better with respect to this metric?
 ```{r}
-
+ASE.ses=((sum(fit.ses$fitted-tsTemp))^2)/length(tsTemp)
+ASE.ses
+ASE.holt=((sum(fit.holt$fitted-tsTemp))^2)/length(tsTemp)
+ASE.holt
 ```
 
+##### The holt model performs better based on ASE.
+
+#### 3a. Utilize the dygraphs library. Read in both Unit12TimeSeries_Ollivander and _Gregorovitch.csv as two different data frames.  They do not have headers, so make sure you account for that.  This is a time series of Wands sold over years.
+```{r}
+ollivanderDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Ollivander.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+names(ollivanderDF) <- c("Year","Wands") # rename table columns
+
+gregorovitchDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Gregorovitch.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+names(gregorovitchDF) <- c("Year","Wands") # rename table columns
+```
+
+#### 3b. You don’t have your information in the proper format!  In both data sets, you’ll need to first convert the date-like variable to an actual Date class.
+```{r}
+ollivanderDF$Year <- as.Date(ollivanderDF$Year)
+gregorovitchDF$Year <- as.Date(gregorovitchDF$Year)
+```
+
+#### 3c. Use the library xts (and the xts() function in it to make each data frame an xts object (effectively, a time series).  You’ll want to order.by the Date variable.
+```{r}
+ollivander <- xts(ollivanderDF[,-1], order.by = ollivanderDF[,1])
+gregorovitch <- xts(gregorovitchDF[,-1], order.by = gregorovitchDF[,1])
+```
+
+#### 3d. Bind the two xts objects together and create a dygraph from it.  Utilize the help() index if you’re stuck.
+```{r}
+wands <- cbind(ollivander, gregorovitch)
+colnames(wands) <- c("Ollivander","Gregorovitch")
+#wands$yr <- NULL
+dygraph(wands)
+```
 
