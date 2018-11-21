@@ -1,7 +1,7 @@
 ---
 title: "Time Series HW 12"
 author: "Steve Bramhall"
-date: "November 16, 2018"
+date: "November 20, 2018"
 output: html_document
 ---
 
@@ -27,9 +27,9 @@ head(eu[,1]) # column 1 is the DAX
 
 #### 1b. These are annual European Stock Data from 1990 onward.  Create a rudimentary plot of the data.  Make the line blue.  Give an informative title.  Label the axes accurately.  In 1997, an event happened you want to indicate; add a vertical red line to your plot which divides pre-1997 and post-1997 information.
 ```{r}
-tsDAX <- EuStockMarkets[,"DAX"]
+tsDAX <- EuStockMarkets[,"DAX"]   # just get DAX data
 plot(tsDAX,col="blue",main="DAX Performance from 1990",ylab="EURO",xlab="Year")
-abline(v=1997,col="red")
+abline(v=1997,col="red")          # add vertical red line at 1997
 ```
 
 #### 1c. Decompose the time series into its components (i.e., trend, seasonality, random).  Keep in mind that this is a multiplicative model you want.  Create a plot of all decomposed components.  As before, make all lines blue and have a vertical divider at the year 1997
@@ -37,7 +37,7 @@ abline(v=1997,col="red")
 ```{r}
 decompDAX <- decompose(tsDAX, type = "mult")
 plot(decompDAX, col="blue")
-abline(v=1997, col="red")
+abline(v=1997, col="red")   # add vertical red line at 1997
 ```
 
 #### 2a. Using the maxtemp dataset granted by loading fpp2, there are maximum annual temperature data in Celsius.  For more information, use help(maxtemp).  To see what you’re looking at, execute the command in ‘Examples’ in the help document.
@@ -48,24 +48,24 @@ autoplot(maxtemp, xlab="Year", ylab="Temperature (C)")
 
 #### 2b. We are only concerned with information after 1990.  Please eliminate unwanted information or subset information we don’t care about.
 ```{r}
-tsTemp <- window(maxtemp, start=1990)
+tsTemp <- window(maxtemp, start=1990)                   # limit data seen, start=1990
 autoplot(tsTemp, xlab="Year", ylab="Temperature (C)")
 ```
 
 #### 2c. Utilize SES to predict the next five years of maximum temperatures in Melbourne.  Plot this information, including the prior information and the forecast.  Add the predicted value line across 1990-present as a separate line, preferably blue.  So, to review, you should have your fit, the predicted value line overlaying it, and a forecast through 2021, all on one axis. Find the AICc and BIC of this fitted model.  You will use that information later.
 ```{r}
-fit.ses <- ses(tsTemp, h=5)
-plot(fit.ses,main="Compare Forecast Fit",xlab="Year", ylab="Temperature (C)")
-lines(fitted(fit.ses), col="blue")
-lines(fit.ses$mean, col="blue",type="o")
+fit.ses <- ses(tsTemp, h=5,initial="optimal")
+plot(tsTemp,main="Compare Forecast Fit",xlab="Year", ylab="Temperature (C)",xlim=c(1990,2023)) # plot & extend x-axis
+lines(fitted(fit.ses), col="blue")         # add fit
+lines(fit.ses$mean, col="blue",type="o")   # add predicted fit
 ```
 
 #### 2d. Now use a damped Holt’s linear trend to also predict out five years.  Make sure initial=“optimal.”  As above, create a similar plot to 1C, but use the Holt fit instead.
 ```{r}
-fit.holt <- holt(tsTemp,damped=TRUE, h=5)
-plot(fit.holt,main="Compare Forecast Holt Fit",xlab="Year", ylab="Temperature (C)")
-lines(fitted(fit.holt), col="blue")
-lines(fit.holt$mean, col="blue",type="o")
+fit.holt <- holt(tsTemp,damped=TRUE, h=5, initial = "optimal")
+plot(tsTemp,main="Compare Forecast Holt Fit",xlab="Year", ylab="Temperature (C)",xlim=c(1990,2023)) # plot & extend x-axis
+lines(fitted(fit.holt), col="blue")         # add fit
+lines(fit.holt$mean, col="blue",type="o")   # add predicted fit
 ```
 
 #### 2e. Compare the AICc and BIC of the ses() and holt() models.  Which model is better here?
@@ -74,44 +74,53 @@ summary(fit.ses)
 summary(fit.holt)
 ```
 
-##### The ses model is better.
+##### SES AICC = 141.53, HOLT AICC = 145.59 
+##### SES BIC  = 144.37, HOLT BIC  = 149.16
+##### The ses model is better based on the lower values for AICC and BIC.
 
 #### 2f.	Calculate and compare the ASE from the ses() and holt() models.  Which one performs better with respect to this metric?
 ```{r}
-ASE.ses=((sum(fit.ses$fitted-tsTemp))^2)/length(tsTemp)
+ASE.ses=(sum((fit.ses$fitted-tsTemp)^2))/length(tsTemp)   # calc ASE for ses fit
 ASE.ses
-ASE.holt=((sum(fit.holt$fitted-tsTemp))^2)/length(tsTemp)
+ASE.holt=(sum((fit.holt$fitted-tsTemp)^2))/length(tsTemp) # calc ASE for holt fit
 ASE.holt
 ```
 
-##### The holt model performs better based on ASE.
+##### SES ASE = 5.39, SES HOLT = 4.46. The holt model performs better based on lower ASE.
 
 #### 3a. Utilize the dygraphs library. Read in both Unit12TimeSeries_Ollivander and _Gregorovitch.csv as two different data frames.  They do not have headers, so make sure you account for that.  This is a time series of Wands sold over years.
 ```{r}
-ollivanderDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Ollivander.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+ollivanderDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Ollivander.csv",header=TRUE,sep=",",encoding = "UTF-8")
 names(ollivanderDF) <- c("Year","Wands") # rename table columns
 
-gregorovitchDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Gregorovitch.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+gregorovitchDF <- read.csv(".\\InputFiles\\Unit12TimeSeries_Gregorovitch.csv",header=TRUE,sep=",",encoding = "UTF-8")
 names(gregorovitchDF) <- c("Year","Wands") # rename table columns
 ```
 
 #### 3b. You don’t have your information in the proper format!  In both data sets, you’ll need to first convert the date-like variable to an actual Date class.
 ```{r}
-ollivanderDF$Year <- as.Date(ollivanderDF$Year)
-gregorovitchDF$Year <- as.Date(gregorovitchDF$Year)
+ollivanderDF$Year <- as.Date(ollivanderDF$Year,"%m/%d/%Y")        # convert/format date columns for TS
+gregorovitchDF$Year <- as.Date(gregorovitchDF$Year,"%m/%d/%Y")    # convert/format date columns for TS
 ```
 
-#### 3c. Use the library xts (and the xts() function in it to make each data frame an xts object (effectively, a time series).  You’ll want to order.by the Date variable.
+#### 3c. Use the library xts and the xts() function in it to make each data frame an xts object (effectively, a time series).  You’ll want to order.by the Date variable.
 ```{r}
-ollivander <- xts(ollivanderDF[,-1], order.by = ollivanderDF[,1])
-gregorovitch <- xts(gregorovitchDF[,-1], order.by = gregorovitchDF[,1])
+ollivanderTS <- xts(ollivanderDF[,-1], order.by = as.Date(ollivanderDF[,1]))        # convert DF to TS
+gregorovitchTS <- xts(gregorovitchDF[,-1], order.by = as.Date(gregorovitchDF[,1]))  # convert DF to TS
 ```
 
-#### 3d. Bind the two xts objects together and create a dygraph from it.  Utilize the help() index if you’re stuck.
+#### 3d. Bind the two xts objects together and create a dygraph from it.  
 ```{r}
-wands <- cbind(ollivander, gregorovitch)
-colnames(wands) <- c("Ollivander","Gregorovitch")
-#wands$yr <- NULL
-dygraph(wands)
+wands <- cbind(ollivanderTS, gregorovitchTS)                      # create 2 columns of time series
+colnames(wands) <- c("Ollivander","Gregorovitch")                 # rename columns
+
+dygraph(wands,main="Wand Sales",xlab="Year",ylab="Wand Qty") %>%  # create dygraph and label axes & title
+  dyOptions(colors = RColorBrewer::brewer.pal(3,"Set1")) %>%      # change default colors
+  dyOptions(stackedGraph = TRUE) %>%                              # stack data
+  dyRangeSelector(height = 70) %>%                                # add range selector and enlarge
+  dyHighlight(highlightSeriesOpts = list(strokeWidth = 3)) %>%    # enable interactie highlighting
+  dyShading(from="1995-1-1", to="1999-1-1",color="yellow")        # shade 1995-1999
+  
+
 ```
 
